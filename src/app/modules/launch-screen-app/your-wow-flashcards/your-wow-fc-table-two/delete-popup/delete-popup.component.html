@@ -1,0 +1,29 @@
+<section class="">
+  <!-- <mat-toolbar class="component--dialog-box__custom-toolbar">
+    <span class="text-sm font-[550]">Delete </span>
+    <span class="example-spacer"></span>
+    <button mat-icon-button class="flex items-center justify-center w-[30px]">
+      <mat-icon (click)="onNoClick()">close</mat-icon>
+    </button>
+  </mat-toolbar> -->
+  <!-- Content -->
+  <section class="p-2">
+    <div class="my-2 font-bold text-lg text-center">Are you sure?</div>
+    <div class="my-2 text-secondary text-xs text-center">
+      Do you really want to remove these record? This process cannot be undone.
+    </div>
+    <div class="my-2 flex justify-center gap-x-2">
+      <button class="primary-button" mat-raised-button mat-dialog-close="false">
+        Cancel
+      </button>
+      <button
+        class="primary-button"
+        style="background-color: rgb(255, 5, 5)"
+        mat-raised-button
+        mat-dialog-close="true"
+      >
+        Delete
+      </button>
+    </div>
+  </section>
+</section>

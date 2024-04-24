@@ -1,0 +1,141 @@
+<mat-toolbar class="component--dialog-box__custom-toolbar">
+  <span class="text-sm font-[550] text-[11px]"></span>
+  <span class="example-spacer">RECOMMEND Teaching Faculty</span>
+  <button mat-dialog-button class="flex items-center justify-center" (click)="OnClick()">
+    <mat-icon>close</mat-icon>
+  </button>
+</mat-toolbar>
+<section class="py-0 flex flex-col overflow-hidden" mat-dialog-content>
+  <div>
+    <!-- Select from the following Teaching Faculty User Categories  -->
+    <div class="flex lt-sm:flex-wrap">
+      <div class="normal-heading mt-auto mb-auto mr-[2px]">
+        Select from the following Teaching Faculty User Categories
+      </div>
+      <div class="gt-lg:ml-1 lt-sm:w-full md:w-1/2 gt-lg:w-1/3">
+        <mat-form-field class="w-full component--mat-form-field__custom-input" appearance="outline">
+          <mat-select class="red-heading" (valueChange)="select_teaching_faculty($event)" placeholder="- select -">
+            <mat-option *ngFor="let item of teaching_faculty_users" [value]="item">
+              <span class="normal-heading">{{item?.user_category_name}}</span>
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+
+
+    <!-- table  -->
+    <div>
+      <div class="mat-elevation-z8 mt-2 table-responsive w-fit">
+        <div id="pdfTable6">
+          <table id="excel_table" matSort mat-table #table [dataSource]="dataSource"
+            style="margin-left: auto; margin-right: auto"
+            class="component--mat-table__custom-table checklist-table table-bordered table-sm block">
+            <!-- date and time Column -->
+            <ng-container matColumnDef="select_from_the_users_registered">
+              <th mat-header-cell *matHeaderCellDef style="
+                    min-width: 380px;
+                    max-width: 400px;
+                    word-wrap: break-word;
+                    white-space: nowrap;
+                    vertical-align: middle;
+                    text-align: center;
+                    border-right: 1px solid #9a9a9a;
+                  ">
+                <div style="display: flex; width: 100%;">
+                  <div style="width: 10%; margin-top: auto; margin-bottom: auto;">
+                    <mat-checkbox [disabled]="is_checkbox" (change)="$event ? masterToggle() : null"
+                      [checked]="selection.hasValue() && isAllSelected()"
+                      [indeterminate]="selection.hasValue() && !isAllSelected()">
+                    </mat-checkbox>
+                  </div>
+                  <div style="width: 90%;">
+                    Select from the Users Registered <br> in the above category:
+                  </div>
+                </div>
+              </th>
+              <td style="
+                    padding-left: 8px;
+                    text-align: left;
+                  " mat-cell *matCellDef="let element">
+                <div style="width: 100%; display: flex;">
+                  <div style="width: 10%; margin-top: auto; margin-bottom: auto;">
+                    <mat-checkbox [disabled]="is_checkbox" (click)="$event.stopPropagation()"
+                      (change)="$event ? selection.toggle(element) : null" [checked]="selection.isSelected(element)">
+                    </mat-checkbox>
+                  </div>
+                  <div style="width: 90%;">
+                    <span class="primary-heading cursor-pointer" (click)="openUserProfile(
+                      element?.user_id,
+                      decodedToken.user?.customer_id,
+                      decodedToken.user?.country_code
+                    )">
+                      {{element.first_name}} {{element.last_name}}
+                    </span><br>
+                    <span *ngFor="let item of element.category" class="secondary-heading" style="font-size: 12px;"> {{item}}</span>
+                  </div>
+                </div>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true" style="text-align: center"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"
+              (click)="selection.toggle(row); onRowClicked(row)" (mouseover)="row.hovered = true"
+              (mouseout)="row.hovered = false"></tr>
+
+            <tr class="mat-row" *matNoDataRow style="text-align: center;">
+              <td class="mat-cell" colspan="1">
+                Data not found
+                <!-- "{{ input.value }}" -->
+              </td>
+            </tr>
+          </table>
+        </div>
+        <mat-paginator class="component--mat-pagination__size" #paginator #paginatorElement
+          [length]="dataSource.data.length" [pageIndex]="0" [pageSizeOptions]="[5, 10, 20]" [pageSize]="5"
+          appAddAllToPaginator (page)="pageChanged($event)" [allValue]="dataSource.data.length">
+          <!-- [allValue]="dataSource.data.length" -->
+        </mat-paginator>
+        <span class="normal-heading" style="font-size: 12px; font-weight: 400; margin-left: 4px;">
+          <span class="red-heading" style="font-size: 12px;">*</span> Select "All" Records in order to enable filter</span>  
+        <div class="flex bg-white-black" id="export_btn">
+          <div class="custom-mat-floating-label">
+            <mat-form-field appearance="outline" class="component--mat-form-field__custom-input pl-2">
+              <mat-label>Filter</mat-label>
+              <input matInput (keyup)="applyFilter($event)" #input placeholder="Filter" [disabled]="filterDisable"/>
+            </mat-form-field>
+          </div>
+          <div class="w-full flex justify-end">
+            <span class="p-5 export-btn" [matMenuTriggerFor]="menu">Export</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-2 ml-auto mr-auto">
+      <button mat-raised-button class="primary-button" (click)="recommend_btn()"
+        [disabled]="is_recommend">RECOMMEND</button>
+    </div>
+  </div>
+</section>
+
+
+
+<mat-menu #menu="matMenu">
+  <button mat-menu-item (click)="downloadAsPDF()">
+    <mat-icon>picture_as_pdf</mat-icon>
+    <span>Print / Export PDF</span>
+  </button>
+  <button mat-menu-item (click)="exportReport('sample.xlsx')">
+    <mat-icon>grid_on</mat-icon>
+    <span>Export SpreadSheet</span>
+  </button>
+  <button mat-menu-item (click)="exportReport('sample.csv')">
+    <mat-icon>grid_on</mat-icon>
+    <span>Export csv File</span>
+  </button>
+  <button mat-menu-item (click)="exportReport('sample.json')">
+    <mat-icon>grid_on</mat-icon>
+    <span>Export json</span>
+  </button>
+</mat-menu>

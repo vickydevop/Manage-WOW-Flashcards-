@@ -1,0 +1,20 @@
+<mat-toolbar class="component--dialog-box__custom-toolbar">
+    <span class="font-[550] lt-md:text-[9px] gt-md:text-[14px] md:text-[12px]">EDIT Global Course / Subject of Your Interest</span>
+    <span class="example-spacer"></span>
+    <button mat-icon-button class="flex items-center justify-center">
+      <mat-icon (click)="onNoClick()">close</mat-icon>
+    </button>
+  </mat-toolbar>
+  <div class="h-[600px]">
+    <div>
+      <iframe #app_frame class="w-full h-[555px]" style="border: 0" allow="web-share"></iframe>
+    </div>
+    <div class="flex justify-center items-center py-auto">
+      <div class="mt-2">
+        <button mat-raised-button class="primary-button bg-[#ff3333]" (click)="onNoClick()" color="warn" mat-dialog-close>
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+  

@@ -1,0 +1,197 @@
+<mat-toolbar class="component--dialog-box__custom-toolbar">
+  <span class="text-sm font-[550] text-[11px]"></span>
+  <span class="example-spacer">Daily Earnings</span>
+  <button mat-dialog-button class="flex items-center justify-center" (click)="OnClick()">
+    <mat-icon>close</mat-icon>
+  </button>
+</mat-toolbar>
+<section class="py-0 flex flex-col overflow-hidden" mat-dialog-content>
+  <div>
+    <!-- Daily Earnings of WOW FlashCards:  -->
+    <div>
+      <span class="normal-heading">Daily Earnings of WOW FlashCards: <span class="red-heading"> {{data?.wow_flashcards_name}}</span></span>
+    </div>
+
+    <!-- from and to date  -->
+    <div class="md:flex gt-md:flex lt-md:flex-wrap">
+      <!-- from  -->
+      <form [formGroup]="date">
+        <div>
+          <mat-form-field appearance="outline" class="component--mat-form-field__custom-input w-full mt-3 mb-1">
+            <mat-label class="primary-heading">From</mat-label>
+            <input matInput [matDatepicker]="releasedAtPicker" formControlName="from_date" (dateChange)="loadData()"/>
+            <mat-datepicker-toggle matSuffix [for]="releasedAtPicker">
+            </mat-datepicker-toggle>
+            <mat-datepicker #releasedAtPicker> </mat-datepicker>
+          </mat-form-field>
+        </div>
+        <!-- to -->
+        <div class="ml-1">
+          <mat-form-field appearance="outline" class="component--mat-form-field__custom-input w-full mt-3 mb-1">
+            <mat-label class="primary-heading">To</mat-label>
+            <input matInput [min]="min_to_date" [matDatepicker]="releasedAtPicker1" formControlName="to_date" (dateChange)="loadData()"/>
+            <mat-datepicker-toggle matSuffix [for]="releasedAtPicker1">
+            </mat-datepicker-toggle>
+            <mat-datepicker #releasedAtPicker1> </mat-datepicker>
+          </mat-form-field>
+        </div>
+      </form>
+    </div>
+
+      <!-- table  -->
+      <div>
+        <div
+          class="mat-elevation-z8 mt-2 table-responsive w-fit"
+        >
+          <div id="pdfTable2">
+            <table
+              id="excel_table"
+              matSort
+              mat-table
+              #table
+              [dataSource]="dataSource"
+              style="margin-left: auto; margin-right: auto"
+              class="component--mat-table__custom-table checklist-table table-bordered table-sm block"
+            >
+              <!-- Earnings Date -->
+              <ng-container matColumnDef="earning_date">
+                <th
+                  mat-header-cell
+                  *matHeaderCellDef
+                  style="
+                    max-width: 150px;
+                    min-width: 130px;
+                    word-wrap: break-word;
+                    white-space: nowrap;
+                    vertical-align: middle;
+                    text-align: center;
+                    border-right: 1px solid #9a9a9a;
+                  "
+                >
+                Earnings Date
+                </th>
+                <td
+                  style="
+                    border-right: 1px solid #9a9a9a;
+                    vertical-align: middle;
+                    padding-left: 8px;
+                    text-align: left;
+                  "
+                  mat-cell
+                  *matCellDef="let element"
+                >
+                {{element.earning_datetime | date:'dd MMM y'}}
+                </td>
+              </ng-container>
+  
+              <!-- Consolidated Daily Earnings-->
+              <ng-container
+                matColumnDef="consolidated_daily_earnings"
+                style="border-right: 1px solid #9a9a9a"
+              >
+                <th
+                  mat-header-cell
+                  *matHeaderCellDef
+                  style="
+                    min-width: 200px;
+                    max-width: 200px;
+                    word-wrap: break-word;
+                    white-space: nowrap;
+                    vertical-align: middle;
+                    text-align: center;
+                    border-right: 1px solid #9a9a9a;
+                  "
+                >
+                Consolidated Daily Earnings 
+                </th>
+                <td
+                  style="
+                    border-right: 1px solid #9a9a9a;
+                    vertical-align: middle;
+                    text-align: right;
+                    padding-right: 8px;
+                  "
+                  mat-cell
+                  *matCellDef="let element"
+                >
+                <span class="normal-heading">{{element.total_earning_amount}} <span class="red-heading"> {{element.earning_currency}}</span></span>
+                </td>
+              </ng-container>
+  
+              <tr
+                mat-header-row
+                *matHeaderRowDef="displayedColumns; sticky: true"
+                style="text-align: center"
+              ></tr>
+              <tr
+                mat-row
+                *matRowDef="let row; columns: displayedColumns"
+                (click)="selection.toggle(row); onRowClicked(row)"
+                (mouseover)="row.hovered = true"
+                (mouseout)="row.hovered = false"
+              ></tr>
+  
+              <tr class="mat-row" *matNoDataRow style="text-align: center;">
+                <td class="mat-cell" colspan="2">
+                  Data not found
+                </td>
+              </tr>
+            </table>
+          </div>
+          <mat-paginator
+            class="component--mat-pagination__size"
+            #paginator
+            #paginatorElement
+            [length]="dataSource.data.length"
+            [pageIndex]="0"
+            [pageSizeOptions]="[5, 10, 20]"
+            [pageSize]="5"
+            appAddAllToPaginator
+            (page)="pageChanged($event)"
+            >
+            <!-- [allValue]="dataSource.data.length" -->
+          </mat-paginator>
+          <span class="normal-heading" style="font-size: 12px; font-weight: 400; margin-left: 4px;">
+            <span class="red-heading" style="font-size: 12px;">*</span> Select "All" Records in order to enable filter</span>    
+          <div class="flex bg-white-black" id="export_btn">
+            <div class="custom-mat-floating-label">
+              <mat-form-field
+                appearance="outline"
+                class="component--mat-form-field__custom-input pl-2"
+              >
+                <!-- <mat-label>Filter</mat-label> -->
+                <input matInput (keyup)="applyFilter($event)" #input placeholder="Filter" [disabled]="filterDisable"/>
+              </mat-form-field>
+            </div>
+            <div class="w-full flex justify-end">
+              <span class="p-5 export-btn" [matMenuTriggerFor]="menu"
+                >Export</span
+              >
+            </div>
+          </div>
+        </div>
+        <div class="mt-3" *ngIf="total_upto_date_earnings != null">
+          <span class="normal-heading">Total Earnings: {{total_upto_date_earnings}}<span class="red-heading"> {{total_upto_date_earnings_currency}}</span></span>
+        </div>
+      </div>
+  </div>
+</section>
+
+<mat-menu #menu="matMenu">
+  <button mat-menu-item (click)="downloadAsPDF()">
+    <mat-icon>picture_as_pdf</mat-icon>
+    <span>Print / Export PDF</span>
+  </button>
+  <button mat-menu-item (click)="exportReport('sample.xlsx')">
+    <mat-icon>grid_on</mat-icon>
+    <span>Export SpreadSheet</span>
+  </button>
+  <button mat-menu-item (click)="exportReport('sample.csv')">
+    <mat-icon>grid_on</mat-icon>
+    <span>Export csv File</span>
+  </button>
+  <button mat-menu-item (click)="exportReport('sample.json')">
+    <mat-icon>grid_on</mat-icon>
+    <span>Export json</span>
+  </button>
+</mat-menu>

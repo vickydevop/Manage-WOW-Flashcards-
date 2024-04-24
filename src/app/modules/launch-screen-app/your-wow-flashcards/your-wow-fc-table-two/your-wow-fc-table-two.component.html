@@ -1,0 +1,243 @@
+<!-- buttons  -->
+<div class="space-x-1 space-y-1">
+    <button mat-raised-button class="primary-button" (click)="link_new_and_edit(0)">Link New</button>
+    <button mat-raised-button class="primary-button" [disabled]="is_disabled_btn" (click)="link_new_and_edit(1)">Edit</button>
+    <button mat-raised-button class="primary-button" [disabled]="is_disabled_remove_btn" (click)="delete_conform_dialog()">Remove</button>
+    <button  mat-raised-button class="primary-button" [disabled]="is_share_and_unshare" (click)="share_and_unshare()"><span *ngIf="selected_table_value?.is_shared_globally == 1">UnShare Globally</span><span *ngIf="selected_table_value?.is_shared_globally == 0">Share Globally</span></button>
+    <!-- <button *ngIf="selected_table_value?.is_shared_globally == 0" mat-raised-button class="primary-button" [disabled]="is_disabled_btn">Share Globally</button> -->
+
+</div>
+
+ <!-- table  -->
+ <div>
+    <div
+      class="mat-elevation-z8 mt-2 table-responsive gt-md:w-fit md:w-fit lt-md:w-full"
+    >
+      <div id="pdfTable5">
+        <table
+          id="excel_table"
+          matSort
+          mat-table
+          #table
+          [dataSource]="dataSource"
+          style="margin-left: auto; margin-right: auto"
+          class="component--mat-table__custom-table checklist-table table-bordered table-sm block"
+        >
+          <!-- Country Name -->
+          <ng-container matColumnDef="country_name">
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              style="
+                max-width: 200px;
+                min-width: 150px;
+                word-wrap: break-word;
+                white-space: nowrap;
+                vertical-align: middle;
+                text-align: center;
+                border-right: 1px solid #9a9a9a;
+              "
+            >
+            Country Name
+            </th>
+            <td
+              style="
+                border-right: 1px solid #9a9a9a;
+                vertical-align: middle;
+                padding-left: 8px;
+                text-align: left;
+              "
+              mat-cell
+              *matCellDef="let element"
+            >
+              <mat-radio-button name="flashcard_table_2" (click)="radio_btn_fun(element)"></mat-radio-button>
+            {{element.educational_institution_category_country_code}}
+            </td>
+          </ng-container>
+
+          <!-- Global Educational Institution - Category / Edu Institution Name  -->
+          <ng-container
+            matColumnDef="inst_category"
+            style="border-right: 1px solid #9a9a9a"
+          >
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              style="
+                min-width: 280px;
+                max-width: 300px;
+                word-wrap: break-word;
+                white-space: nowrap;
+                vertical-align: middle;
+                text-align: center;
+                border-right: 1px solid #9a9a9a;
+              "
+            >
+            Global Educational <br> Institution - Category / Edu <br> Institution Name 
+            </th>
+            <td
+              style="
+               padding-left: 8px;
+                text-align: left;
+              "
+              mat-cell
+              *matCellDef="let element"
+            >
+            {{element.registered_educational_institution_name}}
+            </td>
+          </ng-container>
+
+          <!-- Course/Subject Name -Category / Type  -->
+          <ng-container
+            matColumnDef="course_subject_category"
+            style="border-right: 1px solid #9a9a9a"
+          >
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              style="
+                min-width: 200px;
+                max-width: 250px;
+                word-wrap: break-word;
+                white-space: nowrap;
+                padding-left: 8px;
+                padding-right: 8px;
+                vertical-align: middle;
+                text-align: center;
+                border-right: 1px solid #9a9a9a;
+              "
+            >
+            Course/Subject Name - <br>
+            Category / Type
+            </th>
+            <td
+            style="
+                padding-left: 8px;
+                text-align: left;
+                "
+              mat-cell
+              *matCellDef="let element"
+              >
+              {{element.course_subject_name}} - {{element.course_subject_type}}
+            </td>
+          </ng-container>
+
+          <!-- Is WOW FlashCards Shared Globally? (Global Resource ID)  -->
+          <ng-container
+            matColumnDef="is_shared_globally"
+            style="border-right: 1px solid #9a9a9a"
+          >
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              style="
+                min-width: 180px;
+                max-width: 200px;
+                word-wrap: break-word;
+                white-space: nowrap;
+                padding-left: 8px;
+                padding-right: 8px;
+                vertical-align: middle;
+                text-align: center;
+                border-right: 1px solid #9a9a9a;
+              "
+            >
+            Is WOW FlashCards <br>
+            Shared Globally? <br>
+            (Global FlashCards ID)
+            </th>
+            <td
+              style="
+                padding-left: 8px;
+                text-align: left;
+              "
+              mat-cell
+              *matCellDef="let element"
+            >
+            <div *ngIf="element.is_shared_globally == 1 && element.is_global == 1">
+              <span>Yes,</span> <br>
+              <span>{{element.global_flashcards_id}}</span>
+            </div>
+            <div *ngIf="element.is_global == 0">
+              <span>Not Applicable</span>
+            </div>
+            <div *ngIf="element.is_shared_globally == 0 && element.is_global == 1">
+              <span>---</span>
+            </div>
+            </td>
+          </ng-container>
+
+          <tr
+            mat-header-row
+            *matHeaderRowDef="displayedColumns; sticky: true"
+            style="text-align: center"
+          ></tr>
+          <tr
+            mat-row
+            *matRowDef="let row; columns: displayedColumns"
+            (click)="selection.toggle(row); onRowClicked(row)"
+            (mouseover)="row.hovered = true"
+            (mouseout)="row.hovered = false"
+          ></tr>
+
+          <tr class="mat-row" *matNoDataRow style="text-align: center;">
+            <td class="mat-cell" colspan="5">
+              Data not found
+              <!-- "{{ input.value }}" -->
+            </td>
+          </tr>
+        </table>
+      </div>
+      <mat-paginator
+        class="component--mat-pagination__size"
+        #paginator
+        #paginatorElement
+        [length]="dataSource.data.length"
+        [pageIndex]="0"
+        [pageSizeOptions]="[5, 10, 20]"
+        [pageSize]="5"
+        appAddAllToPaginator
+        (page)="pageChanged($event)" 
+        [allValue]="dataSource.data.length"
+        >
+        <!-- [allValue]="dataSource.data.length" -->
+      </mat-paginator>
+      <span class="normal-heading" style="font-size: 12px; font-weight: 400; margin-left: 4px;">
+        <span class="red-heading" style="font-size: 12px;">*</span> Select "All" Records in order to enable filter</span>  
+      <div class="flex bg-white-black" id="export_btn">
+        <div class="custom-mat-floating-label">
+          <mat-form-field
+            appearance="outline"
+            class="component--mat-form-field__custom-input pl-2"
+          >
+            <!-- <mat-label>Filter</mat-label> -->
+            <input matInput (keyup)="applyFilter($event)" #input placeholder="Filter" [disabled]="filterDisable"/>
+          </mat-form-field>
+        </div>
+        <div class="w-full flex justify-end">
+          <span class="p-5 export-btn" [matMenuTriggerFor]="menu"
+            >Export</span
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+
+<mat-menu #menu="matMenu">
+    <button mat-menu-item (click)="downloadAsPDF()">
+      <mat-icon>picture_as_pdf</mat-icon>
+      <span>Print / Export PDF</span>
+    </button>
+    <button mat-menu-item (click)="exportReport('sample.xlsx')">
+      <mat-icon>grid_on</mat-icon>
+      <span>Export SpreadSheet</span>
+    </button>
+    <button mat-menu-item (click)="exportReport('sample.csv')">
+      <mat-icon>grid_on</mat-icon>
+      <span>Export csv File</span>
+    </button>
+    <button mat-menu-item (click)="exportReport('sample.json')">
+      <mat-icon>grid_on</mat-icon>
+      <span>Export json</span>
+    </button>
+  </mat-menu>

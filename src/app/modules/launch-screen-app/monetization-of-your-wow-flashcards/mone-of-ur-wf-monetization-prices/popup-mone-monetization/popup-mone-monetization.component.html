@@ -1,0 +1,89 @@
+<mat-toolbar class="component--dialog-box__custom-toolbar">
+  <span class="text-sm font-[550] text-[11px]"></span>
+  <span class="example-spacer">Monetization / Edit Monetization</span>
+  <button mat-dialog-button class="flex items-center justify-center" (click)="OnClick()">
+    <mat-icon>close</mat-icon>
+  </button>
+</mat-toolbar>
+<section class="py-0 flex flex-col overflow-hidden" mat-dialog-content>
+  <div>
+    <!-- button -->
+    <button mat-raised-button class="primary-button" [disabled]="is_saved_btn != (this.monetization.controls['monetization_globally'].valid || this.monetization.controls['monetization_from_app_users'].valid)" (click)="save_btn()">Save</button>
+  </div>
+
+  <div style="display: flex;">
+    <div>
+      <span class="normal-heading">WOW FlashCards Name: <span class="red-heading"> {{data?.rad_btn_value?.wow_flashcards_name}}</span></span>
+    </div>
+    <div class="ml-6">
+      <span class="normal-heading">WOW FlashCards ID: <span class="red-heading"> {{data?.rad_btn_value?.institutional_wow_flashcards_id}}</span></span>
+    </div>
+  </div>
+
+  <div *ngIf="data?.rad_btn_value?.monetization_info?.effective_from_datetime != null">
+    <span class="normal-heading">Monetization Effective From Date, Time: <span class="red-heading"> {{data?.rad_btn_value?.monetization_info?.effective_from_datetime | date:'dd MMM y, h:mm a'}}</span></span>
+  </div>
+  <form [formGroup]="monetization">
+    <!-- Monetize globally @ :  -->
+    <div class="md:flex-wrap gt-md:flex lt-md:flex-wrap">
+      <div class="flex">
+        <div class="mt-auto mb-auto">
+          <mat-checkbox [checked]="monetization_checked == true" name="monetize_g" (change)="checkbox_monetize_globally($event)">
+          </mat-checkbox>
+        </div>
+        <div class="mt-auto mb-auto ml-1">
+          <div>
+            <span class="primary-heading">Monetize globally @ :</span> <br>
+          </div>
+          <div class="mt-[-10px]">
+            <span class="secondary-heading" style="font-size: 10px;">Onetime Subscription Cost:</span>
+          </div>
+        </div>
+      </div>
+      <div class="mt-auto mb-auto ml-1 text-[12px]">
+        <mat-form-field appearance="outline" class="lt-md:w-full gt-md:w-[70%] md:w-[75%] component--mat-form-field__custom-input">
+          <input matInput formControlName="monetization_globally" type="number" placeholder="Enter your amount"/>
+        </mat-form-field>
+        <span class="red-heading"> {{data?.rad_btn_value?.currency_code}}/User</span>
+      </div>
+    </div>
+  
+    <!-- Monetize from APP users of:  -->
+    <div class="md:flex-wrap gt-md:flex lt-md:flex-wrap mt-1">
+      <div class="flex">
+        <div class="mt-auto mb-auto">
+          <mat-checkbox [checked]="institution_checked == true" (change)="checkbox_monetize_from_app_users($event)">
+          </mat-checkbox>
+        </div>
+        <div class="mt-auto mb-auto ml-1">
+          <div>
+            <span class="primary-heading">Monetize from APP users of:</span> 
+            <span class="ml-1 red-heading"> {{data?.rad_btn_value?.registered_educational_institution_name.toUpperCase()}} <span class="primary-heading"> @:</span></span> <br>
+          </div>
+          <div class="mt-[-10px]">
+            <span class="secondary-heading" style="font-size: 10px;">Onetime Subscription Cost:</span>
+          </div>
+        </div>
+      </div>
+      <div class="mt-auto mb-auto ml-1 text-[12px]">
+        <mat-form-field appearance="outline" class="lt-md:w-full gt-md:w-[70%] md:w-[75%] component--mat-form-field__custom-input">
+          <input matInput formControlName="monetization_from_app_users" type="number"  placeholder="Enter your amount"/>
+        </mat-form-field>
+        <span class="red-heading">  {{data?.rad_btn_value?.currency_code}}/User</span>
+      </div>
+    </div>
+  </form>
+
+  <!-- text  -->
+  <div class="mt-1">
+    <span class="red-heading" style="font-size: 12px;">Please keep in mind that lower the subscription cost, the more
+      likely it is that the teaching faculty will recommend and share your WOW FlashCards.</span>
+  </div>
+  <!-- note  -->
+  <div>
+    <span class="normal-heading" style="font-size: 12px;"><span class="red-heading">Please Note:</span> We at <span class="primary-heading" style="text-decoration: underline;">get<span class="red-heading">WOW</span>.education</span>
+     will deduct<span class="primary-heading"> {{data?.rad_btn_value?.tds_percentage}}%</span> of your monetization earnings as platform fees in order to provide the storage and software services. TDS - Tax Deducted at Source shall be applicable as per govt laws.
+      Local taxes will be applicable to the purchaser/user at the time of purchase. 
+       This platform fees will vary from time to time and is subject to the <span class="primary-heading" style="text-decoration: underline;">terms and conditions</span>.</span>
+  </div>
+</section>

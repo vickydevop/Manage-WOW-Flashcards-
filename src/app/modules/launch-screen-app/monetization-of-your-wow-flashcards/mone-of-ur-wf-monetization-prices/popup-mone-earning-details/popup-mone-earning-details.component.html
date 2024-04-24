@@ -1,0 +1,157 @@
+<mat-toolbar class="component--dialog-box__custom-toolbar">
+  <span class="text-sm font-[550] text-[11px]"></span>
+  <span class="example-spacer">Earning Details</span>
+  <button mat-dialog-button class="flex items-center justify-center" (click)="OnClick()">
+    <mat-icon>close</mat-icon>
+  </button>
+</mat-toolbar>
+<section class="py-0 flex flex-col overflow-hidden" mat-dialog-content>
+  <div>
+    <!-- Monetization Price History of WOW Flashcards: -->
+    <div>
+      <span class="normal-heading">Monetization Price History of WOW Flashcards: <span class="red-heading"> {{data?.wow_flashcards_name}}</span></span>
+    </div>
+
+    <!-- table  -->
+    <div>
+      <div class="mat-elevation-z8 mt-2 table-responsive gt-md:w-fit md:w-fit lt-md:w-full">
+        <div id="pdfTable2">
+          <table id="excel_table" matSort mat-table #table [dataSource]="dataSource"
+            style="margin-left: auto; margin-right: auto"
+            class="component--mat-table__custom-table checklist-table table-bordered table-sm block">
+            <!-- Effective From Date, Time -->
+            <ng-container matColumnDef="effective_from_date_time">
+              <th mat-header-cell *matHeaderCellDef style="
+                    max-width: 150px;
+                    min-width: 100px;
+                    word-wrap: break-word;
+                    white-space: nowrap;
+                    vertical-align: middle;
+                    text-align: center;
+                    border-right: 1px solid #9a9a9a;
+                  ">
+                Effective From <br> Date, Time
+              </th>
+              <td style="
+                    border-right: 1px solid #9a9a9a;
+                    vertical-align: middle;
+                    padding-left: 8px;
+                    text-align: left;
+                  " mat-cell *matCellDef="let element">
+                  {{element?.effective_from_datetime | date:'dd MMM y,'}} <br>
+                  {{element?.effective_from_datetime | date:' h:mm a'}}
+              </td>
+            </ng-container>
+
+            <!-- Monetization from your Educational Institution’s Users -->
+            <ng-container matColumnDef="monetization_from_your_inst_users" style="border-right: 1px solid #9a9a9a">
+              <th mat-header-cell *matHeaderCellDef style="
+                    min-width: 150px;
+                    max-width: 180px;
+                    word-wrap: break-word;
+                    white-space: nowrap;
+                    vertical-align: middle;
+                    text-align: center;
+                    border-right: 1px solid #9a9a9a;
+                  ">
+                Monetization from <br> your Educational <br> Institution’s Users
+              </th>
+              <td style="
+                    border-right: 1px solid #9a9a9a;
+                    vertical-align: middle;
+                    text-align: right;
+                    padding-right: 8px;
+                  " mat-cell *matCellDef="let element">
+                   <div *ngIf="element?.one_time_subscription_cost_per_user_for_institutional_users != null">
+                    <span>{{element.one_time_subscription_cost_per_user_for_institutional_users}} <span class="red-heading"> {{element?.one_time_subscription_institutional_users_currency}} / User</span></span>
+                  </div>
+                  <div *ngIf="element?.one_time_subscription_cost_per_user_for_institutional_users == null">
+                    <span>Monetization Suspended</span>
+                  </div>
+              </td>
+            </ng-container>
+
+            <!--  Monetization from Global Users  -->
+            <ng-container matColumnDef="monetization_from_global_users" style="border-right: 1px solid #9a9a9a">
+              <th mat-header-cell *matHeaderCellDef style="
+                    min-width: 150px;
+                    max-width: 180px;
+                    word-wrap: break-word;
+                    white-space: nowrap;
+                    padding-left: 8px;
+                    padding-right: 8px;
+                    vertical-align: middle;
+                    text-align: center;
+                    border-right: 1px solid #9a9a9a;
+                  ">
+                Monetization from <br> Global Users
+              </th>
+              <td style="
+                    border-right: 1px solid #9a9a9a;
+                    vertical-align: middle;
+                    padding-right: 8px;
+                    text-align: right;
+                  " mat-cell *matCellDef="let element">
+              <div *ngIf="element?.one_time_subscription_cost_per_user_for_global_users != null">
+                <span>{{element.one_time_subscription_cost_per_user_for_global_users}} <span class="red-heading"> {{element?.one_time_subscription_global_users_currency}} / User</span></span>
+              </div>
+              <div *ngIf="element?.one_time_subscription_cost_per_user_for_global_users == null">
+                <span>Monetization Suspended</span>
+              </div>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true" style="text-align: center"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"
+              (click)="selection.toggle(row); onRowClicked(row)" (mouseover)="row.hovered = true"
+              (mouseout)="row.hovered = false"></tr>
+
+            <tr class="mat-row" *matNoDataRow style="text-align: center;">
+              <td class="mat-cell" colspan="3">
+               Data not found
+              </td>
+            </tr>
+          </table>
+        </div>
+        <mat-paginator class="component--mat-pagination__size" #paginator #paginatorElement
+          [length]="dataSource.data.length" [pageIndex]="0" [pageSizeOptions]="[5, 10, 20]" [pageSize]="5"
+          appAddAllToPaginator (page)="pageChanged($event)" [allValue]="dataSource.data.length">
+          <!-- [allValue]="dataSource.data.length" -->
+        </mat-paginator>
+        <span class="normal-heading" style="font-size: 12px; font-weight: 400; margin-left: 4px;">
+          <span class="red-heading" style="font-size: 12px;">*</span> Select "All" Records in order to enable filter</span>  
+        <div class="flex bg-white-black" id="export_btn">
+          <div class="custom-mat-floating-label">
+            <mat-form-field appearance="outline" class="component--mat-form-field__custom-input pl-2">
+              <!-- <mat-label>Filter</mat-label> -->
+              <input matInput (keyup)="applyFilter($event)" #input placeholder="Filter" [disabled]="filterDisable"/>
+            </mat-form-field>
+          </div>
+          <div class="w-full flex justify-end">
+            <span class="p-5 export-btn" [matMenuTriggerFor]="menu">Export</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<mat-menu #menu="matMenu">
+  <button mat-menu-item (click)="downloadAsPDF()">
+    <mat-icon>picture_as_pdf</mat-icon>
+    <span>Print / Export PDF</span>
+  </button>
+  <button mat-menu-item (click)="exportReport('sample.xlsx')">
+    <mat-icon>grid_on</mat-icon>
+    <span>Export SpreadSheet</span>
+  </button>
+  <button mat-menu-item (click)="exportReport('sample.csv')">
+    <mat-icon>grid_on</mat-icon>
+    <span>Export csv File</span>
+  </button>
+  <button mat-menu-item (click)="exportReport('sample.json')">
+    <mat-icon>grid_on</mat-icon>
+    <span>Export json</span>
+  </button>
+</mat-menu>

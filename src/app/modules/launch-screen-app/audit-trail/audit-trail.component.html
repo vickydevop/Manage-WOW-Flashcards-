@@ -1,0 +1,127 @@
+<div class="">
+    <div class="mat-elevation-z8 example-container w-fit">
+      <div id="Audit_pdfTable">
+        <table *ngIf="dataSource" id="excel_table" mat-table [dataSource]="dataSource"
+          class="component--mat-table__custom-table checklist-table table-bordered table-sm block">
+          <ng-container matColumnDef="entry_datetime">
+            <th mat-header-cell *matHeaderCellDef style="
+            word-wrap: break-word;
+            min-width: 80px;
+            max-width: 160px;
+            padding-right: 8px;
+            padding-left: 8px;
+            text-align: center;
+            vertical-align: middle;
+            margin-top:8px;
+            margin-bottom: 8px;
+            white-space: nowrap;
+          ">Entry Date Time</th>
+            <td mat-cell *matCellDef="let element" style="text-align:left; padding-right:8px; padding-left:8px;">
+              {{ element.entry_date_time | date:'d MMM y, h:mm a' }}
+            </td>
+          </ng-container>
+          <!-- style="white-space: nowrap" -->
+          <ng-container matColumnDef="entry_type">
+            <th mat-header-cell *matHeaderCellDef style="
+            word-wrap: break-word;
+            min-width: 80px;
+            max-width: 160px;
+            padding-right: 8px;
+            padding-left: 8px;
+            text-align: center;
+            vertical-align: middle;
+            margin-top:8px;
+            margin-bottom: 8px;
+            white-space: nowrap;
+          ">Entry Type</th>
+            <td mat-cell *matCellDef="let element" style="text-align:left; padding-right:8px; padding-left:8px;">
+              {{element.entry_type}}
+            </td>
+          </ng-container>
+  
+          <ng-container matColumnDef="entry_by_user_name">
+            <th mat-header-cell *matHeaderCellDef style="
+              word-wrap: break-word;
+              min-width: 120px;
+              max-width: 300px;
+              padding-right: 8px;
+              width:160px;
+              padding-left: 8px;
+              text-align: center;
+              vertical-align: middle;
+              margin-top:8px;
+              margin-bottom: 8px;
+              white-space: nowrap;
+            ">
+             Entry By User Name
+               
+            </th>
+            <td mat-cell *matCellDef="let element" style="text-align:left; padding-right:8px; padding-left:8px;"
+              class=""
+              >
+              <div  style="display:flex;align-items: center;gap: 4px;cursor: pointer;" (click)="openUserProfile(element?.user_id,element.customer_id,element.country_code)">
+                <!-- <div  style="height:30px; width:30px;">
+                  <img [src]="user_image(element?.previous_login_image_of_the_day_ceph_object_id)"
+                  onerror="this.src='../../../../../../assets/icons/profile_icon.jpg'"
+                  style="width: 100%;height: 100%;"
+                   >
+                </div> -->
+                <div style="text-align:left;" class="leading-none">
+                  <div class="primary-heading">{{ element.first_name }} <br>{{element.last_name}}</div>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+  
+          <tr mat-header-row *matHeaderRowDef="displayedColumns sticky:true;"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="selection.toggle(row); onRowClicked(row)"
+            [ngClass]="{
+              hovered: row.hovered,
+              highlighted: selection.isSelected(row)
+            }" (mouseover)="row.hovered = true" (mouseout)="row.hovered = false"></tr>
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" colspan="4" style="text-align: center;">
+                 Data not found
+                </td> 
+              </tr>
+            </table>
+          </div>
+          <div>
+            <mat-paginator class="component--mat-pagination__size" #paginator #paginatorElement
+              [length]="dataSource.data.length" [pageIndex]="0" [pageSizeOptions]="[5, 10, 20]" [pageSize]="5"
+              [allValue]="dataSource.data.length" appAddAllToPaginator (page)="pageChanged($event)">
+            </mat-paginator>
+          </div>
+          <span class="normal-heading" style="font-size: 12px; font-weight: 400; margin-left: 4px;">
+            <span class="red-heading" style="font-size: 12px;">*</span> Select "All" Records in order to enable filter</span>    
+          <div class="flex bg-white-black">
+            <div class="custom-mat-floating-label">
+              <mat-form-field appearance="outline" class="component--mat-form-field__custom-input pl-2">
+                <!-- <mat-label>Filter</mat-label> -->
+                <input matInput (keyup)="applyFilter($event)" #input placeholder="Records shown in page" placeholder="Filter" [disabled]="filterDisable"/>
+              </mat-form-field>
+            </div>
+            <div class="w-full flex justify-end">
+              <span class="p-5 export-btn" [matMenuTriggerFor]="menu">Export</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="downloadAsPDF()">
+          <mat-icon>picture_as_pdf</mat-icon>
+          <span>Print / Export PDF</span>
+        </button>
+        <button mat-menu-item (click)="exportReport('sample.xlsx')">
+          <mat-icon>grid_on</mat-icon>
+          <span>Export SpreadSheet</span>
+        </button>
+        <button mat-menu-item (click)="exportReport('sample.csv')">
+          <mat-icon>grid_on</mat-icon>
+          <span>Export csv File</span>
+        </button>
+        <button mat-menu-item (click)="exportReport('sample.json')">
+          <mat-icon>grid_on</mat-icon>
+          <span>Export json</span>
+        </button>
+      </mat-menu>

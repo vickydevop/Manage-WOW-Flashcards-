@@ -1,0 +1,196 @@
+<div>
+  <!-- List of Recommended WOW FlashCards: -->
+  <div>
+    <span class="normal-heading">List of Recommended WOW FlashCards:</span>
+  </div>
+
+  <!-- buttons  -->
+  <div class="space-x-1 space-y-1">
+    <button mat-raised-button class="primary-button" [disabled]="is_disabled" (click)="access_popup()">Access WOW FlashCards</button>
+    <button mat-raised-button class="primary-button" [disabled]="is_disabled" (click)="assign_to_students_popup()">Assign to Students</button>
+    <button mat-raised-button class="primary-button" [disabled]="is_disabled" (click)="recommend_teaching_faculty()">Recommend </button>
+    <span class="primary-heading">to Other Teaching Faculty</span>
+  </div>
+  <!-- table  -->
+  <div>
+    <div class="mat-elevation-z8 mt-2 table-responsive gt-md:w-fit md:w-fit lt-md:w-full">
+      <div id="pdfTable">
+        <table id="excel_table" matSort mat-table #table [dataSource]="dataSource"
+          style="margin-left: auto; margin-right: auto"
+          class="component--mat-table__custom-table checklist-table table-bordered table-sm block">
+          <!-- Shared Date, Time -->
+          <ng-container matColumnDef="shared_date_time">
+            <th mat-header-cell *matHeaderCellDef style="
+                        max-width: 150px;
+                        min-width: 140px;
+                        word-wrap: break-word;
+                        white-space: nowrap;
+                        vertical-align: middle;
+                        text-align: center;
+                        border-right: 1px solid #9a9a9a;
+                      ">
+              Shared <br> Date, Time
+            </th>
+            <td style="
+                        border-right: 1px solid #9a9a9a;
+                        vertical-align: middle;
+                        padding-left: 8px;
+                        text-align: left;
+                      " mat-cell *matCellDef="let element">
+                      <div style="display: flex;">
+                        <div style="margin-top: auto; margin-bottom: auto;">
+                          <mat-radio-button (click)="select_rad_btn(element)"></mat-radio-button>
+                        </div>
+                        <div>
+                          {{element?.shared_datetime | date : 'dd MMM y,'}} <br>
+                          {{element?.shared_datetime | date : 'h:mm a'}}
+                        </div>
+                        <div *ngIf="element?.flag_new_date == 1" style="padding: 4px; margin-left: auto; margin-right: 8px; margin-top: auto; margin-bottom: 4px;" class="new">
+                          <span>
+                            New
+                        </span>
+                        </div>
+                      </div>
+                      <!-- <div *ngIf="element?.flag_new_date == 1" style="padding: 4px; margin-left: 80px;">
+                        <button
+                          class="bg-red-600 rounded-1xl text-white px-1"
+                          style="height: 25px; width: 35px; border-radius: 15px"
+                        >
+                          New
+                        </button>
+                      </div> -->
+            </td>
+          </ng-container>
+
+          <!-- WOW FlashCards -->
+          <ng-container matColumnDef="wow_flashcards" style="border-right: 1px solid #9a9a9a">
+            <th mat-header-cell *matHeaderCellDef style="
+                        min-width: 180px;
+                        max-width: 200px;
+                        word-wrap: break-word;
+                        white-space: nowrap;
+                        vertical-align: middle;
+                        text-align: center;
+                        border-right: 1px solid #9a9a9a;
+                      ">
+              WOW FlashCards
+            </th>
+            <td style="
+                        border-right: 1px solid #9a9a9a;
+                        vertical-align: middle;
+                        text-align: left;
+                        padding-left: 8px;
+                      " mat-cell *matCellDef="let element">
+              <div>
+                <div style="height: 50px;width: 50px; padding: 2px 0px 2px 0px;" *ngIf="element?.wow_flashcards_thumb_nail_cloud_storage_file_id != null">
+                  <img [src]="shw_ceph_img(element?.wow_flashcards_thumb_nail_cloud_storage_file_id)" style="height: 100%;width: 100%;">
+                </div>
+                <div>
+                  {{element.wow_flashcards_name}}
+                  <span *ngIf="element.inst_flashcards_question_count"> ({{element.inst_flashcards_question_count[0]?.count}})</span>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Recommended by: -->
+          <ng-container matColumnDef="recommended_by" style="border-right: 1px solid #9a9a9a">
+            <th mat-header-cell *matHeaderCellDef style="
+                        min-width: 150px;
+                        max-width: 180px;
+                        word-wrap: break-word;
+                        white-space: nowrap;
+                        padding-left: 8px;
+                        padding-right: 8px;
+                        vertical-align: middle;
+                        text-align: center;
+                        border-right: 1px solid #9a9a9a;
+                      ">
+              Recommended by :
+            </th>
+            <td style="
+                        border-right: 1px solid #9a9a9a;
+                        vertical-align: middle;
+                        padding-left: 8px;
+                        text-align: left;
+                      " mat-cell *matCellDef="let element">
+                      <span class="primary-heading cursor-pointer" (click)="openUserProfile(
+                        element?.recommended_by_user_info?.user_id,
+                        element?.recommended_by_user_info?.customer_id,
+                        element?.recommended_by_user_info?.country_code
+                      )">
+                      {{element?.recommended_by_user_info?.first_name}} <br> {{element?.recommended_by_user_info?.last_name}}
+                    </span>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true" style="text-align: center"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="selection.toggle(row); onRowClicked(row)"
+            (mouseover)="row.hovered = true" (mouseout)="row.hovered = false"></tr>
+
+          <tr class="mat-row" *matNoDataRow style="text-align: center;">
+            <td class="mat-cell" colspan="3">
+              Data not found
+            </td>
+          </tr>
+        </table>
+      </div>
+      <mat-paginator class="component--mat-pagination__size" #paginator #paginatorElement
+        [length]="dataSource.data.length" [pageIndex]="0" [pageSizeOptions]="[5, 10, 20]" [pageSize]="5"
+        appAddAllToPaginator (page)="pageChanged($event)" [allValue]="dataSource.data.length">
+        <!-- [allValue]="dataSource.data.length" -->
+      </mat-paginator>
+      <span class="normal-heading" style="font-size: 12px; font-weight: 400; margin-left: 4px;">
+        <span class="red-heading" style="font-size: 12px;">*</span> Select "All" Records in order to enable filter</span>
+      <div class="flex bg-white-black" id="export_btn">
+        <div class="custom-mat-floating-label">
+          <mat-form-field appearance="outline" class="component--mat-form-field__custom-input pl-2">
+            <!-- <mat-label>Filter</mat-label> -->
+            <input matInput (keyup)="applyFilter($event)" #input placeholder="Filter" [disabled]="filterDisable"/>
+          </mat-form-field>
+        </div>
+        <div class="w-full flex justify-end">
+          <span class="p-5 export-btn" [matMenuTriggerFor]="menu">Export</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-3 nb-2">
+    <div style="background-color: #9a9a9a; height: 4px;"></div>
+  </div>
+
+  <!-- table two  -->
+  <div *ngIf="is_list_of_course_subject == false">
+    <!-- List of Courses / Subjects linked to WOW FlashCards Name:  -->
+    <div>
+      <span class="normal-heading">List of Courses / Subjects linked to WOW FlashCards Name:</span>
+      <span class="red-heading"> {{selected_rad_btn_value?.wow_flashcards_name}}</span>
+    </div>
+
+    <!-- table 2  -->
+    <app-recom-wf-table-two [receive_radio_button_value]="selected_rad_btn_value"></app-recom-wf-table-two>
+
+  </div>
+</div>
+
+
+
+<mat-menu #menu="matMenu">
+  <button mat-menu-item (click)="downloadAsPDF()">
+    <mat-icon>picture_as_pdf</mat-icon>
+    <span>Print / Export PDF</span>
+  </button>
+  <button mat-menu-item (click)="exportReport('sample.xlsx')">
+    <mat-icon>grid_on</mat-icon>
+    <span>Export SpreadSheet</span>
+  </button>
+  <button mat-menu-item (click)="exportReport('sample.csv')">
+    <mat-icon>grid_on</mat-icon>
+    <span>Export csv File</span>
+  </button>
+  <button mat-menu-item (click)="exportReport('sample.json')">
+    <mat-icon>grid_on</mat-icon>
+    <span>Export json</span>
+  </button>
+</mat-menu>

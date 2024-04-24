@@ -1,0 +1,20 @@
+<mat-toolbar class="component--dialog-box__custom-toolbar">
+    <span class="text-sm font-[550]" style="font: small-caption;">Access Wow Flashcards</span>
+    <span class="example-spacer"></span>
+    <button mat-icon-button class="flex items-center justify-center">
+      <mat-icon (click)="onNoClick()">close</mat-icon>
+    </button>
+  </mat-toolbar>
+  <div class="h-[600px]">
+    <div>
+      <iframe #app_frame class="w-full h-[550px]" style="border: 0" allow="web-share"></iframe>
+    </div>
+    <div class="flex justify-center items-center py-auto">
+      <div class="mt-2">
+        <button mat-raised-button class="primary-button bg-[#ff3333]" (click)="onNoClick()" color="warn" mat-dialog-close>
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+  

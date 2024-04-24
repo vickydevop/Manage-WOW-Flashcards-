@@ -1,0 +1,33 @@
+<mat-toolbar class="component--dialog-box__custom-toolbar">
+    <span class="text-sm font-[550] text-[11px]"></span>
+    <span class="example-spacer">Rate the WOW FlashCards</span>
+    <button mat-dialog-button class="flex items-center justify-center" (click)="close_popup()">
+        <mat-icon>close</mat-icon>
+    </button>
+</mat-toolbar>
+<section class="py-0 flex flex-col overflow-hidden" mat-dialog-content>
+    <!-- WOW FlashCards ID:  -->
+    <div>
+        <span class="secondary-heading">WOW FlashCards ID: <span class="normal-heading"> {{data?.institutional_wow_flashcards_id}}</span></span> <br>
+        <span class="secondary-heading">WOW FlashCards Name: <span class="red-heading"> {{data?.wow_flashcards_name}}</span></span> <br>
+        <!-- <span class="secondary-heading">Syllabus:</span> -->
+    </div>
+
+    <!-- button's  -->
+    <div class="mt-2">
+        <button mat-raised-button [disabled]="is_submit_rating" class="primary-button" (click)="submit_rating()">Submit Rating</button>
+    </div>
+    <form [formGroup]="star_rating">
+        <div class="flex">
+            <div class="mt-auto mb-auto">
+                <span class="normal-heading">Please select the appropriate rating for this Global WOW FlashCards*:</span>
+            </div>
+    
+            <div class="cont">
+                <div class="stars">
+                    <ngx-star-rating (click)="ngx_star_rating()" formControlName="star_rating_value"></ngx-star-rating>
+                </div>
+            </div>
+        </div>
+    </form>
+</section>

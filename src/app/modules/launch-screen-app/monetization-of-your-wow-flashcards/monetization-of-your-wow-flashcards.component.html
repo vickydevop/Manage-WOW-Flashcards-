@@ -1,0 +1,48 @@
+<div>
+  <!-- Monetization and Earnings Status of your shared WOW FlashCards: -->
+  <div class="text-justify">
+    <span class="normal-heading" style="font-weight: 600;">Monetization and Earnings Status of your shared WOW
+      FlashCards:</span>
+    <span class="normal-heading" style="font-size: 12px;"> Earnings shall commence only when you share your WOW Flashcards
+      with either your APP users or with Global Users and they start using the same.</span>
+  </div>
+  <!-- tabs -->
+  <div class="component--mat-tab__custom-style lt-md:hidden" *ngIf="mobileQuery.matches==false">
+    <mat-tab-group dynamicHeight (selectedTabChange)="tabChanged($event)">
+      <mat-tab label="Monetization Prices">
+        <app-mone-of-ur-wf-monetization-prices *ngIf="tabIndex == 0"></app-mone-of-ur-wf-monetization-prices>
+      </mat-tab>
+      <mat-tab label="Earnings Details">
+        <app-mone-of-ur-wf-earning-details *ngIf="tabIndex == 1 "></app-mone-of-ur-wf-earning-details>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+
+  <!-- tabs in mobile view  -->
+  <div class="gt-md:hidden" *ngIf="mobileQuery.matches==true">
+    <mat-toolbar id="mat-toolbar" style="background-color: #9a9a9a80">
+      <div class="mobile-view" style="color: #3366ff" [matMenuTriggerFor]="menu">
+        <mat-icon class="back-icon">menu_open</mat-icon>
+      </div>
+      <div class="app-name">
+        <span style="color: black" *ngIf="tabIndex == 0"> Monetization Prices</span>
+        <span style="color: black" *ngIf="tabIndex == 1"> Earnings Details</span>
+      </div>
+    </mat-toolbar>
+    <app-mone-of-ur-wf-monetization-prices *ngIf="tabIndex == 0"></app-mone-of-ur-wf-monetization-prices>
+    <app-mone-of-ur-wf-earning-details *ngIf="tabIndex == 1"></app-mone-of-ur-wf-earning-details>
+  </div>
+</div>
+
+
+<!-- * Profile Mobile view -->
+<mat-menu #menu="matMenu" style="height: fit-content" [overlapTrigger]="false">
+  <button mat-menu-item (click)="tabIndex = 0">
+    <span>Monetization Prices</span>
+  </button>
+  <mat-divider></mat-divider>
+  <button mat-menu-item (click)="tabIndex = 1">
+    <span>Earnings Details</span>
+  </button>
+  <mat-divider></mat-divider>
+</mat-menu>

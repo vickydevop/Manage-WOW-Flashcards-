@@ -1,0 +1,429 @@
+<div>
+  <!-- Please Select the Relevant Syllabus of your interest from:  -->
+  <div class="flex lt-sm:flex-wrap">
+    <div class="gt-lg:ml-1 lt-sm:w-full md:w-1/2 gt-lg:w-[50%] lg:w-[80%] relative mt-1">
+      <div class="cursor-pointer absolute top-0 flex items-center px-3 h-full w-full" (click)="selectRef.open()">
+        <mat-label *ngIf="relevantSyllabusData?.type != 1"
+          style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis">
+          <span class="!text-red" style="color: red" *ngIf="
+              relevantSyllabusData?.is_subject_type_is_prefix == false
+            ">
+            {{relevantSyllabusData?.course_subject_name}} - {{relevantSyllabusData?.your_institutional_reference_id}} -
+            {{relevantSyllabusData?.term_info?.key}}
+            {{relevantSyllabusData?.term_info?.value}} - <span
+              class="normal-heading">{{relevantSyllabusData?.educational_institution_category_name}}</span> -
+            {{relevantSyllabusData?.educational_institution_category_country_code}}
+          </span>
+          <span class="!text-red" style="color: red" *ngIf="
+              relevantSyllabusData?.is_subject_type_is_prefix == true
+            ">
+            {{relevantSyllabusData?.course_subject_name}} - {{relevantSyllabusData?.course_subject_type}} -
+            {{relevantSyllabusData?.term_info?.key}}
+            {{relevantSyllabusData?.term_info?.value}} - <span
+              class="normal-heading">{{relevantSyllabusData?.educational_institution_category_name}}</span> -
+            {{relevantSyllabusData?.educational_institution_category_country_code}}
+          </span>
+          <span class="!text-red" style="color: red" *ngIf="
+          relevantSyllabusData?.is_subject_type_is_prefix == undefined
+        ">
+            {{relevantSyllabusData?.course_subject_name}} - {{relevantSyllabusData?.course_subject_type}} -
+            {{relevantSyllabusData?.term_info?.key}}
+            {{relevantSyllabusData?.term_info?.value}} - <span
+              class="normal-heading">{{relevantSyllabusData?.educational_institution_category_name}}</span> -
+            {{relevantSyllabusData?.educational_institution_category_country_code}}
+          </span>
+        </mat-label>
+        <mat-label *ngIf="relevantSyllabusData?.type == 1"
+        style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis"><span class="red-heading"
+          >ALL</span>
+      </mat-label>
+      </div>
+      <mat-form-field class="w-full component--mat-form-field__custom-input absolute top-0" appearance="outline">
+        <mat-label class="normal-heading">
+          Please Select the Relevant Syllabus of your interest from:
+        </mat-label>
+        <mat-select #selectRef class="red-heading" (valueChange)="select_the_relevant_syllabus($event)"
+          [formControl]="select_relevant_syllabus" style="visibility: hidden">
+          <mat-option *ngFor="let data of syllabus_of_your_interest" [value]="data">
+            <div>
+              <div *ngIf="data.type == 1 else el" class="red-heading">All</div>
+              <ng-template #el>
+                <div class="red-heading"
+                  *ngIf="data.hasOwnProperty('is_subject_type_is_prefix') && data.is_subject_type_is_prefix == false else else_data">
+                  {{data.course_subject_name}} - {{data.your_institutional_reference_id}} - {{data?.term_info?.key}}
+                  {{data?.term_info?.value}} - <span
+                    class="normal-heading">{{data.educational_institution_category_name}}</span> -
+                  {{data.educational_institution_category_country_code}}
+                </div>
+                <ng-template #else_data>
+                  <div class="red-heading">
+                    {{data.course_subject_name}} - {{data.course_subject_type}} - {{data?.term_info?.key}}
+                    {{data?.term_info?.value}} - <span
+                      class="normal-heading">{{data.educational_institution_category_name}}</span> -
+                    {{data.educational_institution_category_country_code}}
+                  </div>
+                </ng-template>
+              </ng-template>
+            </div>
+            <!-- <ng-template #el>
+              <div class="red-heading">
+                {{ data.course_subject_name }} -
+                {{ data.course_subject_type }} - {{ data?.term_info?.key }}
+                {{ data?.term_info?.value }} -
+                <span class="normal-heading">{{
+                  data.educational_institution_category_name
+                  }}</span>
+                - {{ data.educational_institution_category_country_code }}
+              </div>
+            </ng-template> -->
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="mt-auto mb-auto ml-1">
+      <u class="primary-heading text-[12px] cursor-pointer" (click)="edit_global_course()">
+        EDIT Global Course / Subject of Your Interest
+      </u>
+    </div>
+  </div>
+
+  <!-- tree view  -->
+  <div *ngIf="is_tree_view_component == false">
+    <app-your-wow-fc-tree-view [receive_data_from_parent]="share_data_to_tree_view"
+      (get_output_data)="get_tree_view_data($event)"></app-your-wow-fc-tree-view>
+  </div>
+
+  <!-- check box  -->
+  <div *ngIf="is_view_hidden_component == false">
+    <mat-checkbox [disabled]="is_view_hidden_wf" (change)="check_box_based($event)"
+      [checked]="is_view_checked == false"><span class="secondary-heading" style="font-size: 12px;">View Hidden WOW
+        FlashCards</span></mat-checkbox>
+  </div>
+  <!-- buttons  -->
+  <div class="space-x-1 space-y-1">
+    <!-- <button mat-raised-button class="primary-button" [disabled]="is_access" (click)="access_popup()">Access</button> -->
+    <button mat-raised-button class="primary-button" [disabled]="is_add_new" (click)="add_new_or_edit(0)">Add
+      New</button>
+    <button mat-raised-button class="primary-button" [disabled]="is_view_edit" (click)="add_new_or_edit(1)">View /
+      Edit</button>
+    <button mat-raised-button class="primary-button" [disabled]="is_hide"
+      (click)="hide_status()">{{is_hide_text}}</button>
+    <button mat-raised-button class="primary-button" [disabled]="is_assign_to_students"
+      (click)="assign_to_students_popup()">Assign to Students</button>
+    <button mat-raised-button class="red-button" [disabled]="is_resolve_flags" (click)="view_resolve_flags()">Resolve
+      Flags</button>
+    <button mat-raised-button class="primary-button" [disabled]="is_recommend"
+      (click)="recommend_teaching_faculty()">Recommend </button>
+    <span class="primary-heading text-[12px]">to Other Teaching Faculty</span>
+  </div>
+
+  <!-- table  -->
+  <div>
+    <div class="mat-elevation-z8 mt-2 table-responsive gt-md:w-fit md:w-fit lt-md:w-full">
+      <div id="pdfTable">
+        <table id="excel_table" matSort mat-table #table [dataSource]="dataSource"
+          style="margin-left: auto; margin-right: auto"
+          class="component--mat-table__custom-table checklist-table table-bordered table-sm block">
+          <!-- date and time Column -->
+          <ng-container matColumnDef="edited_date_time">
+            <th mat-header-cell *matHeaderCellDef style="
+                    max-width: 200px;
+                    min-width: 150px;
+                    word-wrap: break-word;
+                    white-space: nowrap;
+                    vertical-align: middle;
+                    text-align: center;
+                    border-right: 1px solid #9a9a9a;
+                  ">
+              Edited Date, <br> Time
+            </th>
+            <td style="
+                   border-right: 1px solid #9a9a9a;
+                    padding-left: 8px;
+                    text-align: left;" mat-cell *matCellDef="let element">
+              <div style="display: flex;">
+                <div style="margin-top: auto; margin-bottom: auto;">
+                  <mat-radio-button name="flashcard_table_1" (click)="table_rad_btn(element)"></mat-radio-button>
+                </div>
+                <div>
+                  {{element.flashcards_edited_datetime | date : 'dd MMM y,' }} <br>
+                  {{element.flashcards_edited_datetime | date : ' h:mm a' }}
+                </div>
+                <div *ngIf="element?.flag_new_date == 1"
+                  style="padding: 4px; margin-left: auto; margin-right: 8px; margin-top: auto; margin-bottom: 4px;"
+                  class="new">
+                  <span>
+                    New
+                  </span>
+                </div>
+              </div>
+              <!-- <div *ngIf="element?.flag_new_date == 1" style="padding: 4px; margin-left: 90px;" class="new"> -->
+              <!-- <button
+                  class="bg-red-600 rounded-1xl text-white px-1"
+                  style="height: 25px; width: 35px; border-radius: 15px"
+                >
+                  New
+              </button> -->
+              <!-- <span>
+                  New
+              </span>
+              </div> -->
+            </td>
+          </ng-container>
+
+          <!-- flashcard name Column -->
+          <ng-container matColumnDef="wow_flashcard_name" style="border-right: 1px solid #9a9a9a">
+            <th mat-header-cell *matHeaderCellDef style="
+                    min-width: 190px;
+                    max-width: 200px;
+                    word-wrap: break-word;
+                    white-space: nowrap;
+                    vertical-align: middle;
+                    text-align: center;
+                    border-right: 1px solid #9a9a9a;
+                  ">
+              WOW FlashCards Name
+            </th>
+            <td style="
+                   padding-left: 10px;
+                    text-align: left;
+                  " mat-cell *matCellDef="let element">
+              <div>
+                {{element.wow_flashcards_name}}
+                <span *ngIf="element.inst_flashcards_question_count"> ({{element.inst_flashcards_question_count[0]?.count}})</span>
+              </div>
+              <div *ngIf="element?.wow_flashcards_thumb_nail_cloud_storage_file_id != null" style="height: 50px;width: 50px; padding: 2px 0px 2px 0px;">
+                <img [src]="shw_ceph_img(element?.wow_flashcards_thumb_nail_cloud_storage_file_id)"
+                  style="height: 100%;width: 100%;">
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- collaborated with  -->
+          <ng-container matColumnDef="collaborated_with" style="border-right: 1px solid #9a9a9a">
+            <th mat-header-cell *matHeaderCellDef style="
+                    min-width: 130px;
+                    max-width: 150px;
+                    word-wrap: break-word;
+                    white-space: nowrap;
+                    padding-left: 8px;
+                    padding-right: 8px;
+                    vertical-align: middle;
+                    text-align: center;
+                    border-right: 1px solid #9a9a9a;
+                  ">
+              Collaborated With
+            </th>
+            <td style="
+                    border-right: 1px solid #9a9a9a;
+                    vertical-align: middle;
+                    padding-left: 8px;
+                    text-align: left;
+                  " mat-cell *matCellDef="let element">
+              <div *ngIf="element?.collaborated_with?.length>0">
+                <button mat-button [matMenuTriggerFor]="menu1"><span
+                    class="primary-heading">{{element?.collaborated_with[0]?.first_name}}
+                    {{element?.collaborated_with[0]?.last_name}} ...</span> </button>
+                <mat-menu #menu1="matMenu">
+                  <div *ngFor="let item of element?.collaborated_with">
+                    <button mat-menu-item class="primary-heading" (click)="openUserProfile(
+                      item?.user_id,
+                      decodedToken?.user?.customer_id,
+                      decodedToken?.user?.country_code
+                    )">{{item?.first_name}} {{item?.last_name}}</button>
+                  </div>
+                </mat-menu>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- global command  -->
+          <ng-container matColumnDef="global_command" style="border-right: 1px solid #9a9a9a">
+            <th mat-header-cell *matHeaderCellDef style="
+                    min-width: 150px;
+                    max-width: 150px;
+                    word-wrap: break-word;
+                    white-space: nowrap;
+                    padding-left: 8px;
+                    padding-right: 8px;
+                    vertical-align: middle;
+                    text-align: center;
+                    border-right: 1px solid #9a9a9a;
+                  ">
+              <div style="display: flex;">
+                <div style="margin-top: auto; margin-bottom: auto;">
+                  Global Comments
+                </div>
+                <div style="margin-left: 4px;">
+                  <img src="assets/images/mess.jpg" style="height: 27px; width: 27px">
+                </div>
+              </div>
+            </th>
+            <td style="
+                  padding-left: 10px;
+                    text-align: left;
+                  " mat-cell *matCellDef="let element">
+              <div *ngIf="element?.global_comments !=null" style="cursor: pointer;">
+                <span class="primary-heading" style="font-size: 12px;" (click)="global_comments_popup(element)">
+                  {{element.global_comments}} Global Comments
+                </span>
+              </div>
+              <div *ngIf="element?.global_comments == null">
+                <span class="primary-heading" style="font-size: 12px;">None</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- no of flags pending to be resolved  -->
+          <ng-container matColumnDef="no_of_flags_pending" style="border-right: 1px solid #9a9a9a">
+            <th mat-header-cell *matHeaderCellDef style="
+                    min-width: 120px;
+                    max-width: 180px;
+                    word-wrap: break-word;
+                    white-space: nowrap;
+                    padding-left: 8px;
+                    padding-right: 8px;
+                    vertical-align: middle;
+                    text-align: center;
+                    border-right: 1px solid #9a9a9a;
+                  ">
+              <span class="red-heading" style="font-size: 12px;">
+                No of Flags Pending <br> to be Resolved
+              </span>
+            </th>
+            <td style="
+                   padding-left: 10px;
+                    text-align: left;
+                  " mat-cell *matCellDef="let element">
+              <div *ngIf="element.no_of_resolved_flags !=null">
+                <span class="red-heading" style="font-size: 12px;">
+                  {{element.no_of_resolved_flags}} / {{element.no_of_total_flags}}
+                </span>
+              </div>
+              <div *ngIf="element.no_of_resolved_flags ==null">
+                <span class="red-heading" style="font-size: 12px;">
+                  none
+                </span>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true" style="text-align: center"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="selection.toggle(row); onRowClicked(row)"
+            (mouseover)="row.hovered = true" (mouseout)="row.hovered = false"></tr>
+
+          <tr class="mat-row" *matNoDataRow style="text-align: center;">
+            <td class="mat-cell" colspan="5">
+              Data not found
+              <!-- "{{ input.value }}" -->
+            </td>
+          </tr>
+        </table>
+      </div>
+      <mat-paginator class="component--mat-pagination__size" #paginator #paginatorElement
+        [length]="dataSource.data.length" [pageIndex]="0" [pageSizeOptions]="[5, 10, 20]" [pageSize]="5"
+        appAddAllToPaginator (page)="pageChanged($event)" [allValue]="dataSource.data.length">
+        <!-- [allValue]="dataSource.data.length" -->
+      </mat-paginator>
+      <span class="normal-heading" style="font-size: 12px; font-weight: 400; margin-left: 4px;">
+        <span class="red-heading" style="font-size: 12px;">*</span> Select "All" Records in order to enable
+        filter</span>
+      <div class="flex bg-white-black" id="export_btn">
+        <div class="custom-mat-floating-label">
+          <mat-form-field appearance="outline" class="component--mat-form-field__custom-input pl-2">
+            <!-- <mat-label>Filter</mat-label> -->
+            <input matInput (keyup)="applyFilter($event)" #input placeholder="Filter" [disabled]="filterDisable" />
+          </mat-form-field>
+        </div>
+        <div class="w-full flex justify-end">
+          <span class="p-5 export-btn" [matMenuTriggerFor]="menu">Export</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="background-color: #909090; height: 4px; margin-top: 16px; margin-bottom: 8px;"></div>
+
+  <div *ngIf="is_list_of_course_subject == false">
+    <!-- List of Courses / Subjects linked to WOW FlashCards Name:  -->
+    <div>
+      <span class="normal-heading">List of Courses / Subjects linked to WOW FlashCards Name:</span>
+      <span class="red-heading"> {{popup_resolve_flag_data?.wow_flashcards_name}}</span>
+    </div>
+
+    <!-- table 2  -->
+    <app-your-wow-fc-table-two [receive_radio_button_value]="share_data_to_table_two"
+      (get_output_data_from_table_two)="get_table_two_data($event)"></app-your-wow-fc-table-two>
+
+    <div style="background-color: #909090; height: 4px; margin-top: 16px; margin-bottom: 8px;"></div>
+  </div>
+
+  <div class="primary-heading">WOW FlashCards Monetization Guidelines:</div>
+  <div class="text-justify">
+    <div class="flex w-full normal-heading" style="font-size: 12px;">
+      <div class="gt-md:w-[1%] lt-md:w-[5%]">1.</div>
+      <div class="w-[95%]">Please click the link below to watch a video on how to create a good WOW <span
+          class="font-bold">FlashCards</span>. <span class="primary-heading"
+          style="font-size: 12px; cursor: pointer;text-decoration: underline;">Guidelines for
+          creating and monetizing a WOW FlashCards.</span></div>
+    </div>
+    <div class="flex w-full normal-heading" style="font-size: 12px;">
+      <div class="gt-md:w-[1%] lt-md:w-[5%]">2.</div>
+      <div class="w-[95%]">You can monetize your WOW FlashCards by sharing them globally with the teaching faculty of
+        other educational institutions and with the app users of your educational institution. You can decide on the
+        charges to be paid on per user basis. Please Note: We at <span class="primary-heading"
+          style="font-size: 12px; cursor: pointer; text-decoration: underline;">get<span
+            class="red-heading">WOW</span>.education</span> have decided not to charge any commission or fees on your
+        earnings from your monetization on the condition that you shall provide 90% concession in your charges to the
+        users, who choose to pay from their WOW Wallets (with money earned through WOW program). This is done in order
+        to promote collection and recycling though our WOW Program. However, if any user chooses to pay from his / her
+        GET Wallet, no concession shall be applicable and you will receive your monetization earnings in full. In case
+        you have collaborated in creating/adding/editing of a WOW FlashCards with other users, the revenue earned shall
+        be equally distributed to all such users.</div>
+    </div>
+    <div class="flex w-full normal-heading" style="font-size: 12px;">
+      <div class="gt-md:w-[1%] lt-md:w-[5%]">3.</div>
+      <div class="w-[95%]">Globally shared WOW FlashCards have to be approved by any global institution’s teaching
+        faculty before further sharing the same with their institutional users such as their students. Keep in mind that
+        such teaching faculty will not be interested in promoting you or your educational institution. Therefore, avoid
+        including any identity or signs of linkage of yourself or your educational institution, with your GLOBAL WOW
+        FlashCards such as your name, photo, your contact details, institutional name, logo, or contact details in any
+        of the flashcards content / description. By keeping your FlashCards of “white label type”, other institutional
+        teaching faculty will be more interested in using the same in their classes/lectures and they will not hesitate
+        to share it further with their students. This will help in faster monetization.</div>
+    </div>
+    <div class="flex w-full normal-heading" style="font-size: 12px;">
+      <div class="gt-md:w-[1%] lt-md:w-[5%]">4.</div>
+      <div class="w-[95%]">The Global WOW FlashCards should be relevant to the GLOBAL syllabus/topic chosen and the
+        description should be narrative. This will also fetch you better ratings from the other Institutional teaching
+        faculty.</div>
+    </div>
+    <div class="flex w-full normal-heading" style="font-size: 12px;">
+      <div class="gt-md:w-[1%] lt-md:w-[5%]">5.</div>
+      <div class="w-[95%]">In addition, please refrain from copying or plagiarizing any content. If any other teaching
+        faculty flags and reports plagiarism, the relevant WOW FlashCards is likely to be blocked subsequent to our
+        investigation. Repeated attempts of plagiarism shall lead to permanent blockage of the user from sharing any of
+        his/her WOW FlashCards Globally.</div>
+    </div>
+  </div>
+</div>
+
+
+<mat-menu #menu="matMenu">
+  <button mat-menu-item (click)="downloadAsPDF()">
+    <mat-icon>picture_as_pdf</mat-icon>
+    <span>Print / Export PDF</span>
+  </button>
+  <button mat-menu-item (click)="exportReport('sample.xlsx')">
+    <mat-icon>grid_on</mat-icon>
+    <span>Export SpreadSheet</span>
+  </button>
+  <button mat-menu-item (click)="exportReport('sample.csv')">
+    <mat-icon>grid_on</mat-icon>
+    <span>Export csv File</span>
+  </button>
+  <button mat-menu-item (click)="exportReport('sample.json')">
+    <mat-icon>grid_on</mat-icon>
+    <span>Export json</span>
+  </button>
+</mat-menu>

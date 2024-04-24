@@ -1,0 +1,27 @@
+@import "variables";
+@import "global";
+@import "component-global";
+
+
+.hv-center {
+    @apply justify-center items-center;
+}
+
+.mobile-view {
+    color: $large-heading-font-color;
+    @apply gt-md:hidden lt-lg:flex w-7 h-full cursor-pointer;
+    @extend .hv-center;
+}
+
+.app-name {
+    color: $large-heading-font-color;
+    font-size: $medium-font-size;
+    @apply items-center w-full pl-[15px] overflow-hidden text-ellipsis gt-sm:text-[#{$large-font-size}];
+}
+
+:host ::ng-deep.mat-toolbar-row,
+.mat-toolbar-single-row {
+    height: 37px;
+    border-radius: 0;
+    padding: 0;
+}

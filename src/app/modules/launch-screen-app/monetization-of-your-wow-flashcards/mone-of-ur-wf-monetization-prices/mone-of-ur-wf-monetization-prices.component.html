@@ -1,0 +1,424 @@
+<div>
+  <!-- Please Select the Relevant Syllabus of your interest from:  -->
+  <div class="flex lt-sm:flex-wrap">
+    <div class="gt-lg:ml-1 lt-sm:w-full md:w-1/2 gt-lg:w-[50%] lg:w-[80%] relative mt-3">
+      <div class="cursor-pointer absolute top-0 flex items-center px-3 h-full w-full" (click)="selectRef.open()">
+        <mat-label *ngIf="relevantSyllabusData?.type != 1"
+          style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis">
+          <span class="!text-red" style="color: red" *ngIf="
+              relevantSyllabusData?.is_subject_type_is_prefix == false
+            ">
+            {{relevantSyllabusData?.course_subject_name}} - {{relevantSyllabusData?.your_institutional_reference_id}} -
+            {{relevantSyllabusData?.term_info?.key}}
+            {{relevantSyllabusData?.term_info?.value}} - <span
+              class="normal-heading">{{relevantSyllabusData?.educational_institution_category_name}}</span> -
+            {{relevantSyllabusData?.educational_institution_category_country_code}}
+          </span>
+          <span class="!text-red" style="color: red" *ngIf="
+              relevantSyllabusData?.is_subject_type_is_prefix == true
+            ">
+            {{relevantSyllabusData?.course_subject_name}} - {{relevantSyllabusData?.course_subject_type}} -
+            {{relevantSyllabusData?.term_info?.key}}
+            {{relevantSyllabusData?.term_info?.value}} - <span
+              class="normal-heading">{{relevantSyllabusData?.educational_institution_category_name}}</span> -
+            {{relevantSyllabusData?.educational_institution_category_country_code}}
+          </span>
+          <span class="!text-red" style="color: red" *ngIf="
+          relevantSyllabusData?.is_subject_type_is_prefix == undefined
+        ">
+            {{relevantSyllabusData?.course_subject_name}} - {{relevantSyllabusData?.course_subject_type}} -
+            {{relevantSyllabusData?.term_info?.key}}
+            {{relevantSyllabusData?.term_info?.value}} - <span
+              class="normal-heading">{{relevantSyllabusData?.educational_institution_category_name}}</span> -
+            {{relevantSyllabusData?.educational_institution_category_country_code}}
+          </span>
+        </mat-label>
+        <mat-label *ngIf="relevantSyllabusData?.type == 1"
+        style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis"><span class="red-heading"
+          >ALL</span>
+      </mat-label>
+      </div>
+      <mat-form-field class="w-full component--mat-form-field__custom-input absolute top-0" appearance="outline">
+        <mat-label class="normal-heading">
+          Please Select the Relevant Syllabus of your interest from:
+        </mat-label>
+        <mat-select #selectRef style="visibility: hidden" class="red-heading" (valueChange)="select_the_relevant_syllabus($event)"
+          [formControl]="select_relevant_syllabus">
+          <mat-option *ngFor="let data of syllabus_of_your_interest" [value]="data">
+            <div *ngIf="data.type == 1 else name" class="red-heading">All</div>
+            <ng-template #name>
+              <div class="red-heading"
+                *ngIf="data.hasOwnProperty('is_subject_type_is_prefix') && data.is_subject_type_is_prefix == false else else_data">
+                {{data.course_subject_name}} - {{data.your_institutional_reference_id}} - {{data?.term_info?.key}}
+                {{data?.term_info?.value}} - <span
+                  class="normal-heading">{{data.educational_institution_category_name}}</span> -
+                {{data.educational_institution_category_country_code}}
+              </div>
+              <ng-template #else_data>
+                <div class="red-heading">
+                  {{data.course_subject_name}} - {{data.course_subject_type}} - {{data?.term_info?.key}}
+                  {{data?.term_info?.value}} - <span
+                    class="normal-heading">{{data.educational_institution_category_name}}</span> -
+                  {{data.educational_institution_category_country_code}}
+                </div>
+              </ng-template>
+            </ng-template>
+
+            <!-- <div class="red-heading">
+              {{ data.course_subject_name }} -
+              {{ data.course_subject_type }} - {{ data?.term_info?.key }}
+              {{ data?.term_info?.value }} -
+              <span class="normal-heading">{{
+                data.educational_institution_category_name
+              }}</span>
+              - {{ data.educational_institution_category_country_code }}
+            </div> -->
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <!-- tree view  -->
+  <div *ngIf="is_tree_view_component == false">
+    <app-monetization-prices-tree-view [receive_data_from_parent]="share_data_to_tree_view"
+      (get_output_data)="get_tree_view_data($event)"></app-monetization-prices-tree-view>
+  </div>
+  <!-- buttons  -->
+  <div class="space-x-1 space-y-1">
+    <button mat-raised-button class="primary-button" [disabled]="is_disabled_btn"
+      (click)="monetize_and_edit_monetize(0)">Monetize Your Video</button>
+    <button mat-raised-button class="primary-button" [disabled]="is_disabled_btn_check"
+      (click)="monetize_and_edit_monetize(1)">Edit Monetization</button>
+    <button mat-raised-button class="primary-button" [disabled]="is_disabled_btn_check"
+      (click)="suspend_monetization()">Suspend Monetization</button>
+    <button mat-raised-button class="primary-button" [disabled]="is_disabled_btn_history"
+      (click)="earning_details()">View Monetization History</button>
+  </div>
+
+  <!-- table  -->
+  <div>
+    <div class="mat-elevation-z8 mt-2 table-responsive gt-md:w-fit md:w-fit lt-md:w-full">
+      <div id="pdfTable">
+        <table id="excel_table" matSort mat-table #table [dataSource]="dataSource"
+          style="margin-left: auto; margin-right: auto"
+          class="component--mat-table__custom-table checklist-table table-bordered table-sm block">
+          <!-- Effective From Date, Time Column -->
+          <ng-container matColumnDef="effective_from_date_time">
+            <th mat-header-cell *matHeaderCellDef style="
+                    max-width: 150px;
+                    min-width: 130px;
+                    word-wrap: break-word;
+                    white-space: nowrap;
+                    vertical-align: middle;
+                    text-align: center;
+                    border-right: 1px solid #9a9a9a;
+                  ">
+              Effective From <br> Date, Time
+            </th>
+            <td style="
+                    border-right: 1px solid #9a9a9a;
+                    vertical-align: middle;
+                    padding-left: 8px;
+                    text-align: left;
+                  " mat-cell *matCellDef="let element">
+              <div style="display: flex;">
+                <div style="margin-top: auto; margin-bottom: auto;">
+                  <mat-radio-button (click)="selected_rad_btn(element)"></mat-radio-button>
+                </div>
+                <div>
+                  {{element.monetization_info?.effective_from_datetime | date:'dd MMM y,'}} <br>
+                  {{element.monetization_info?.effective_from_datetime | date:'h:mm a'}}
+                </div>
+                <div *ngIf="element?.flag_new_date == 1"
+                  style="padding: 4px; margin-left: auto; margin-right: 8px; margin-top: auto; margin-bottom: 4px;"
+                  class="new">
+                  <span>
+                    New
+                  </span>
+                </div>
+              </div>
+              <!-- <div *ngIf="element?.flag_new_date == 1" style="padding: 4px; margin-left: 80px;">
+                    <button
+                      class="bg-red-600 rounded-1xl text-white px-1"
+                      style="height: 25px; width: 35px; border-radius: 15px"
+                    >
+                      New
+                    </button>
+                  </div> -->
+            </td>
+          </ng-container>
+
+          <!-- WOW FlashCards Column -->
+          <ng-container matColumnDef="wow_flashcards" style="border-right: 1px solid #9a9a9a">
+            <th mat-header-cell *matHeaderCellDef style="
+                    min-width: 150px;
+                    max-width: 180px;
+                    word-wrap: break-word;
+                    white-space: nowrap;
+                    vertical-align: middle;
+                    text-align: center;
+                    border-right: 1px solid #9a9a9a;
+                  ">
+              WOW FlashCards
+            </th>
+            <td style="
+                    border-right: 1px solid #9a9a9a;
+                    vertical-align: middle;
+                    text-align: left;
+                    padding-left: 8px;
+                  " mat-cell *matCellDef="let element">
+              <div>
+                <div style="height: 50px;width: 50px; padding: 2px 0px 2px 0px;" *ngIf="element?.wow_flashcards_thumb_nail_cloud_storage_file_id != null">
+                  <img [src]="shw_ceph_img(element?.wow_flashcards_thumb_nail_cloud_storage_file_id)"
+                    style="height: 100%;width: 100%;">
+                </div>
+                <div>
+                  {{element.wow_flashcards_name}}
+                  <span *ngIf="element.inst_flashcards_question_count"> ({{element.inst_flashcards_question_count[0]?.count}})</span>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!--  ...  -->
+          <ng-container matColumnDef="monetization_from_your_edu" style="border-right: 1px solid #9a9a9a">
+            <th mat-header-cell *matHeaderCellDef style="
+                    min-width: 150px;
+                    max-width: 180px;
+                    word-wrap: break-word;
+                    white-space: nowrap;
+                    padding-left: 8px;
+                    padding-right: 8px;
+                    vertical-align: middle;
+                    text-align: center;
+                    border-right: 1px solid #9a9a9a;
+                  ">
+              Monetization from <br> your Educational <br> Institution’s Users
+            </th>
+            <td style="
+                    border-right: 1px solid #9a9a9a;
+                    vertical-align: middle;
+                    padding-right: 8px;
+                    text-align: right;
+                  " mat-cell *matCellDef="let element">
+              <div
+                *ngIf="element.monetization_info?.one_time_subscription_cost_per_user_for_institutional_users != null">
+                <span>{{element.monetization_info.one_time_subscription_cost_per_user_for_institutional_users}} <span
+                    class="red-heading">
+                    {{element.monetization_info?.one_time_subscription_institutional_users_currency}} / User</span></span>
+              </div>
+              <div
+                *ngIf="element.monetization_info?.one_time_subscription_cost_per_user_for_institutional_users == null">
+                <span>Free</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Monetization from Global Users ...  -->
+          <ng-container matColumnDef="Monetization_from_global_users" style="border-right: 1px solid #9a9a9a">
+            <th mat-header-cell *matHeaderCellDef style="
+                    min-width: 150px;
+                    max-width: 180px;
+                    word-wrap: break-word;
+                    white-space: nowrap;
+                    padding-left: 8px;
+                    padding-right: 8px;
+                    vertical-align: middle;
+                    text-align: center;
+                    border-right: 1px solid #9a9a9a;
+                  ">
+              Monetization from <br>
+              Global Users
+            </th>
+            <td style="
+                    border-right: 1px solid #9a9a9a;
+                    vertical-align: middle;
+                    padding-right: 8px;
+                    text-align: right;
+                  " mat-cell *matCellDef="let element">
+              <div *ngIf="element.monetization_info?.one_time_subscription_cost_per_user_for_global_users != null">
+                <span>{{element.monetization_info.one_time_subscription_cost_per_user_for_global_users}} <span
+                    class="red-heading">
+                    {{element.monetization_info?.one_time_subscription_global_users_currency}} / User</span></span>
+              </div>
+              <div *ngIf="element.monetization_info?.one_time_subscription_cost_per_user_for_global_users == null">
+                <span>Free </span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Shared with Collaborators  -->
+          <ng-container matColumnDef="shared_with_collaborators" style="border-right: 1px solid #9a9a9a">
+            <th mat-header-cell *matHeaderCellDef style="
+                    min-width: 100px;
+                    max-width: 120px;
+                    word-wrap: break-word;
+                    white-space: nowrap;
+                    padding-left: 8px;
+                    padding-right: 8px;
+                    vertical-align: middle;
+                    text-align: center;
+                    border-right: 1px solid #9a9a9a;
+                  ">
+              Shared with <br> Collaborators
+            </th>
+            <td style="
+                    border-right: 1px solid #9a9a9a;
+                    vertical-align: middle;
+                    padding-left: 8px;
+                    text-align: left;
+                  " mat-cell *matCellDef="let element">
+              <div *ngIf="element?.collaborated_user_id?.length>0">
+                <button mat-button [matMenuTriggerFor]="menu1"><span
+                    class="primary-heading">{{element?.collaborated_user_id[0]?.first_name}}
+                    {{element?.collaborated_user_id[0]?.last_name}} ...</span> </button>
+                <mat-menu #menu1="matMenu">
+                  <div *ngFor="let item of element?.collaborated_user_id">
+                    <button mat-menu-item class="primary-heading cursor-pointer" (click)="openUserProfile(
+                          item?.user_id,
+                          decodedToken?.user?.customer_id,
+                          decodedToken?.user?.country_code
+                        )">{{item?.first_name}} {{item?.last_name}}</button>
+                  </div>
+                </mat-menu>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true" style="text-align: center"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="selection.toggle(row); onRowClicked(row)"
+            (mouseover)="row.hovered = true" (mouseout)="row.hovered = false"></tr>
+
+          <tr class="mat-row" *matNoDataRow style="text-align: center;">
+            <td class="mat-cell" colspan="5">
+              Data not found
+            </td>
+          </tr>
+        </table>
+      </div>
+      <mat-paginator class="component--mat-pagination__size" #paginator #paginatorElement
+        [length]="dataSource.data.length" [pageIndex]="0" [pageSizeOptions]="[5, 10, 20]" [pageSize]="5"
+        appAddAllToPaginator (page)="pageChanged($event)" [allValue]="dataSource.data.length">
+        <!-- [allValue]="dataSource.data.length" -->
+      </mat-paginator>
+      <span class="normal-heading" style="font-size: 12px; font-weight: 400; margin-left: 4px;">
+        <span class="red-heading" style="font-size: 12px;">*</span> Select "All" Records in order to enable
+        filter</span>
+      <div class="flex bg-white-black" id="export_btn">
+        <div class="custom-mat-floating-label">
+          <mat-form-field appearance="outline" class="component--mat-form-field__custom-input pl-2">
+            <!-- <mat-label>Filter</mat-label> -->
+            <input matInput (keyup)="applyFilter($event)" #input placeholder="Filter" [disabled]="filterDisable" />
+          </mat-form-field>
+        </div>
+        <div class="w-full flex justify-end">
+          <span class="p-5 export-btn" [matMenuTriggerFor]="menu">Export</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="mt-3 mb-2">
+    <div style="background-color: #9a9a9a; height: 4px;"></div>
+  </div>
+
+  <!-- buttons and table 2  -->
+  <!-- <app-monetization-of-monetization-prices-table-two></app-monetization-of-monetization-prices-table-two> -->
+  <!-- <div *ngIf="is_list_of_course_subject == false"> -->
+    <!-- List of Courses / Subjects linked to WOW FlashCards Name:  -->
+    <!-- <div>
+      <span class="normal-heading">List of Courses / Subjects linked to WOW FlashCards Name:</span> 
+      <span class="red-heading"> {{selected_rad_btn_value?.wow_flashcards_name}}</span>
+    </div> -->
+
+    <!-- table 2  -->
+    <!-- <app-your-wow-fc-table-two [receive_radio_button_value]="share_data_to_table_two"></app-your-wow-fc-table-two>
+    
+    <div style="background-color: #909090; height: 4px; margin-top: 16px; margin-bottom: 8px;"></div>
+  </div> -->
+
+    <!-- WOW FlashCards Monetization Guidelines:  -->
+    <div>
+      <span class="primary-heading">WOW FlashCards Monetization Guidelines:</span>
+      <div class="text-justify">
+        <div class="flex w-full normal-heading" style="font-size: 12px;">
+          <div class="gt-md:w-[1%] lt-md:w-[5%]">1.</div>
+          <div class="w-[95%]">Please click the link below to watch a video on how to create and creating a good WOW
+            FlashCards. <span class="primary-heading"
+              style="cursor: pointer; font-size: 12px; text-decoration: underline;">Guidelines for creating and
+              monetizing
+              a WOW FlashCards.</span></div>
+        </div>
+        <div class="flex w-full normal-heading" style="font-size: 12px;">
+          <div class="gt-md:w-[1%] lt-md:w-[5%]">2.</div>
+          <div class="w-[95%]">You can monetize your WOW FlashCards by sharing them globally with the teaching faculty
+            of
+            other educational institutions and with the app users of your educational institution. You will be paid for
+            every user who can access your WOW FlashCards. Please Note: We at <span class="primary-heading"
+              style="cursor: pointer; font-size: 12px; text-decoration: underline;">get<span
+                class="red-heading">WOW</span>.education</span> have decided not to charge any commission or fees on
+            your
+            earnings from your monetization on the condition that you shall provide 90% concession in your charges to
+            the
+            Teaching Faculty users, who choose to pay from their WOW Wallets. This is done in order to promote
+            collection
+            and recycling though our WOW Program. However, if the user from Teaching Faculty chooses to pay from his /
+            her
+            GET Wallet, no concession shall be applicable and you will receive your monetization earnings in full. In
+            case
+            you have collaborated in creating/adding/editing of a WOW FlashCards with other users, the revenue earned
+            shall
+            be equally distributed to all such users.</div>
+        </div>
+        <div class="flex w-full normal-heading" style="font-size: 12px;">
+          <div class="gt-md:w-[1%] lt-md:w-[5%]">3.</div>
+          <div class="w-[95%]">These GLOBAL WOW FlashCards have to be approved by other institutional teaching faculty
+            before sharing them further with their institutional users such as their students. Keep in mind that such
+            teaching faculty will not be interested in promoting you or your educational institution. Therefore, avoid
+            including any identity or signs of linkage of yourself or your educational institution, with your GLOBAL WOW
+            FlashCards such as your name, photo, your contact details, institutional name, logo, or contact details in
+            any
+            of the files or weblinks. By keeping your FlashCards of “white label type”, other institutional teaching
+            faculty
+            will be more interested in using the same in their classes/lectures and they will be further motivated in
+            sharing it with their students. This will help in faster monetization.</div>
+        </div>
+        <div class="flex w-full normal-heading" style="font-size: 12px;">
+          <div class="gt-md:w-[1%] lt-md:w-[5%]">4.</div>
+          <div class="w-[95%]">The description of your GLOBAL WOW FlashCards should be narrative and should be relevant
+            to
+            the Global syllabus/topic chosen, so that the other Institutional teaching faculty will be interested in
+            using
+            your WOW FlashCards, while teaching their students. This will also fetch you better ratings from the other
+            Institutional teaching faculty.</div>
+        </div>
+        <div class="flex w-full normal-heading" style="font-size: 12px;">
+          <div class="gt-md:w-[1%] lt-md:w-[5%]">5.</div>
+          <div class="w-[95%]">In addition, please refrain from copying or plagiarizing any content. If any other
+            teaching
+            faculty flags and reports plagiarism, the GLOBAL WOW FlashCards is likely to be blocked subsequent to our
+            investigation. Repeated attempts of plagiarism shall lead to permanent blockage of the user from sharing any
+            of his/her WOW FlashCards Globally.</div>
+        </div>
+      </div>
+    </div>
+  <!-- </div> -->
+
+  <mat-menu #menu="matMenu">
+    <button mat-menu-item (click)="downloadAsPDF()">
+      <mat-icon>picture_as_pdf</mat-icon>
+      <span>Print / Export PDF</span>
+    </button>
+    <button mat-menu-item (click)="exportReport('sample.xlsx')">
+      <mat-icon>grid_on</mat-icon>
+      <span>Export SpreadSheet</span>
+    </button>
+    <button mat-menu-item (click)="exportReport('sample.csv')">
+      <mat-icon>grid_on</mat-icon>
+      <span>Export csv File</span>
+    </button>
+    <button mat-menu-item (click)="exportReport('sample.json')">
+      <mat-icon>grid_on</mat-icon>
+      <span>Export json</span>
+    </button>
+  </mat-menu>

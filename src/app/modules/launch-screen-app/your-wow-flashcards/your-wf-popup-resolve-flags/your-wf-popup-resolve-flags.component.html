@@ -1,0 +1,228 @@
+<mat-toolbar class="component--dialog-box__custom-toolbar">
+  <span class="text-sm font-[550] text-[11px]"></span>
+  <span class="example-spacer">View / Resolve Flags</span>
+  <button mat-dialog-button class="flex items-center justify-center" (click)="OnClick()">
+    <mat-icon>close</mat-icon>
+  </button>
+</mat-toolbar>
+<section class="py-0 flex flex-col overflow-hidden" mat-dialog-content>
+
+  <!-- Flagged Messages for Global WOW FlashCards ID: -->
+  <div>
+    <div>
+      <span class="primary-heading">Flagged Messages for Global WOW FlashCards ID:<span class="red-heading">
+          {{data?.global_wow_flashcards_id}}</span></span> <br>
+      <span class="primary-heading">Global WOW FlashCards Name: <span class="red-heading">
+          {{data?.wow_flashcards_name}}</span></span>
+    </div>
+    <!-- View / Resolve button  -->
+    <button mat-raised-button class="primary-button" (click)="view_resolve()" [disabled]="is_view_resolve">View /
+      Resolve</button>
+
+    <!-- table  -->
+    <div>
+      <div class="mat-elevation-z8 mt-2 table-responsive gt-md:w-fit md:w-fit lt-md:w-full">
+        <div id="pdfTable2">
+          <table id="excel_table" matSort mat-table #table [dataSource]="dataSource"
+            style="margin-left: auto; margin-right: auto"
+            class="component--mat-table__custom-table checklist-table table-bordered table-sm block">
+            <!-- Flag Message ID -->
+            <ng-container matColumnDef="flag_message_id">
+              <th mat-header-cell *matHeaderCellDef style="
+                    max-width: 200px;
+                    min-width: 130px;
+                    word-wrap: break-word;
+                    white-space: nowrap;
+                    vertical-align: middle;
+                    text-align: center;
+                    border-right: 1px solid #9a9a9a;
+                  ">
+                Flag Message <br>
+                ID
+              </th>
+              <td style="
+                    border-right: 1px solid #9a9a9a;
+                    padding-left: 8px;
+                    text-align: left;
+                  " mat-cell *matCellDef="let element">
+                <div>
+                  <div>
+                    <mat-radio-button (click)="get_selected_rad_btn(element)"></mat-radio-button>
+                    {{element?.flag_message_id}}
+                  </div>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Flag Reason -->
+            <ng-container matColumnDef="flag_reason" style="border-right: 1px solid #9a9a9a">
+              <th mat-header-cell *matHeaderCellDef style="
+                    min-width: 280px;
+                    max-width: 300px;
+                    word-wrap: break-word;
+                    white-space: nowrap;
+                    vertical-align: middle;
+                    text-align: center;
+                    border-right: 1px solid #9a9a9a;
+                  ">
+                Flag Reason
+              </th>
+              <td style="
+                  padding-left: 8px;
+                    text-align: left;
+                  " mat-cell *matCellDef="let element">
+                <div>
+                  <span *ngIf="element.flag_reason_code == 0">Has Sexual / Adult Content</span>
+                  <span *ngIf="element.flag_reason_code == 1">Has Anti National Content</span>
+                  <span *ngIf="element.flag_reason_code == 2">Has Abusive Content</span>
+                  <span *ngIf="element.flag_reason_code == 3">Not Relevant to Syllabus</span>
+                  <span *ngIf="element.flag_reason_code == 4">Very Less Relevance to Syllabus</span>
+                  <span *ngIf="element.flag_reason_code == 5">Is Plagiarized</span>
+                  <span *ngIf="element.flag_reason_code == 6">Has Wrong Answers</span>
+                  <span *ngIf="element.flag_reason_code == 7">Has Wrong Questions</span>
+                  <span *ngIf="element.flag_reason_code == 8">Has Error in Typing or Spelling or Grammar</span>
+                </div>
+              </td>
+            </ng-container>
+
+            <!--Flagged By: User Details, Date, Time -->
+            <ng-container matColumnDef="flagged_by" style="border-right: 1px solid #9a9a9a">
+              <th mat-header-cell *matHeaderCellDef style="
+                    min-width: 200px;
+                    max-width: 250px;
+                    word-wrap: break-word;
+                    white-space: nowrap;
+                    padding-left: 8px;
+                    padding-right: 8px;
+                    vertical-align: middle;
+                    text-align: center;
+                    border-right: 1px solid #9a9a9a;
+                  ">
+                Flagged By: <br> User Details, Date, Time
+              </th>
+              <td style="
+                    border-right: 1px solid #9a9a9a;
+                    vertical-align: middle;
+                    padding-left: 8px;
+                    text-align: left;
+                  " mat-cell *matCellDef="let element">
+                <div>
+                  <span class="primary-heading cursor-pointer" (click)="openUserProfile(
+                    element?.flagged_by_user_id,
+                    element?.flagged_by_customer_id,
+                    element?.flagged_by_country_code_of_customer_id
+                  )">{{element.flagged_by_user_name}}</span> <br>
+                  <span>{{element.flagged_by_user_category_name}}</span> <br>
+                  <span class="normal-heading" style="font-size: 12px;">Customer Country Code:
+                    {{element.flagged_by_country_code_of_customer_id.toUpperCase()}}</span> <br>
+                  <span>{{element.flagged_datetime | date : 'dd MMM y, h:mm a' }}</span>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Resolved By:User Details, Date, Time  -->
+            <ng-container matColumnDef="resolved_by" style="border-right: 1px solid #9a9a9a">
+              <th mat-header-cell *matHeaderCellDef style="
+                    min-width: 200px;
+                    max-width: 250px;
+                    word-wrap: break-word;
+                    white-space: nowrap;
+                    padding-left: 8px;
+                    padding-right: 8px;
+                    vertical-align: middle;
+                    text-align: center;
+                    border-right: 1px solid #9a9a9a;
+                  ">
+                Resolved By: <br> User Details, Date, Time
+              </th>
+              <td style="
+                    padding-left: 8px;
+                    text-align: left;
+                  " mat-cell *matCellDef="let element">
+                <div>
+                  <span class="primary-heading cursor-pointer" (click)="openUserProfile(
+                    element?.resolved_by_user_id,
+                     decodedToken?.user?.customer_id,
+                      decodedToken?.user?.country_code
+                  )">{{element.resolved_by?.first_name}} {{element.resolved_by?.last_name}}</span> <br>
+                  <span>{{element.resolved_datetime | date : 'dd MMM y, h:mm a' }}</span>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Resolved - Comments  -->
+            <ng-container matColumnDef="resolved_comments" style="border-right: 1px solid #9a9a9a">
+              <th mat-header-cell *matHeaderCellDef style="
+                    min-width: 160px;
+                    max-width: 200px;
+                    word-wrap: break-word;
+                    white-space: nowrap;
+                    padding-left: 8px;
+                    padding-right: 8px;
+                    vertical-align: middle;
+                    text-align: center;
+                    border-right: 1px solid #9a9a9a;
+                  ">
+                Resolved - Comments
+              </th>
+              <td style="
+                    padding-left: 8px;
+                    text-align: left;
+                  " mat-cell *matCellDef="let element">
+                {{element?.resolved_comments}}
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true" style="text-align: center"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"
+              (click)="selection.toggle(row); onRowClicked(row)" (mouseover)="row.hovered = true"
+              (mouseout)="row.hovered = false"></tr>
+
+            <tr class="mat-row" *matNoDataRow style="text-align: center;">
+              <td class="mat-cell" colspan="5">
+                Data not found
+              </td>
+            </tr>
+          </table>
+        </div>
+        <mat-paginator class="component--mat-pagination__size" #paginator #paginatorElement
+          [length]="dataSource.data.length" [pageIndex]="0" [pageSizeOptions]="[5, 10, 20]" [pageSize]="5"
+          appAddAllToPaginator (page)="pageChanged($event)" [allValue]="dataSource.data.length">
+          <!-- [allValue]="dataSource.data.length" -->
+        </mat-paginator>
+        <div class="flex bg-white-black" id="export_btn">
+          <div class="custom-mat-floating-label">
+            <mat-form-field appearance="outline" class="component--mat-form-field__custom-input pl-2">
+              <mat-label>Filter</mat-label>
+              <input matInput (keyup)="applyFilter($event)" #input placeholder="Filter" [disabled]="filterDisable"/>
+            </mat-form-field>
+          </div>
+          <div class="w-full flex justify-end">
+            <span class="p-5 export-btn" [matMenuTriggerFor]="menu">Export</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<mat-menu #menu="matMenu">
+  <button mat-menu-item (click)="downloadAsPDF()">
+    <mat-icon>picture_as_pdf</mat-icon>
+    <span>Print / Export PDF</span>
+  </button>
+  <button mat-menu-item (click)="exportReport('sample.xlsx')">
+    <mat-icon>grid_on</mat-icon>
+    <span>Export SpreadSheet</span>
+  </button>
+  <button mat-menu-item (click)="exportReport('sample.csv')">
+    <mat-icon>grid_on</mat-icon>
+    <span>Export csv File</span>
+  </button>
+  <button mat-menu-item (click)="exportReport('sample.json')">
+    <mat-icon>grid_on</mat-icon>
+    <span>Export json</span>
+  </button>
+</mat-menu>
